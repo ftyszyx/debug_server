@@ -1,0 +1,21 @@
+app:
+  password_init: '123456'
+http:
+  host: '127.0.0.1'
+  port: 3000
+  token_secret_key: testdd
+  # token_expire_time: '4h'
+  #token 失效时间 单位毫秒
+  token_expire_in: 144000000
+db:
+  host: localhost
+  port: 3306
+  user: root
+  password: '123456'
+  database: admin
+redis:
+  host: localhost
+  port: 6379
+  db: 1
+  ttl: 3600
+  password: 123456
