@@ -7,13 +7,14 @@ import NoPower from "@/pages/errpages/401";
 import { ChildProps } from "@/entity/other.entity";
 import { PagePath } from "@/entity/api_path";
 
-const [Home, Login, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
+const [Home, Login, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin, DebugChat] = [
   () => import("@/pages/system/home"),
   () => import("@/pages/auth/login"),
   () => import("@/pages/system/menu_admin"),
   () => import("@/pages/system/power_admin"),
   () => import("@/pages/system/role_admin"),
   () => import("@/pages/system/user_admin"),
+  () => import("@/pages/debug/chat"),
 ].map((item: any) => {
   const TmpLoad = React.lazy(item);
   return (
@@ -37,6 +38,9 @@ const RootRouter = () => {
           <Route path={PagePath.AdminPower} element={PowerAdmin} />
           <Route path={PagePath.AdminRole} element={RoleAdmin} />
           <Route path={PagePath.AdminUser} element={UserAdmin} />
+
+          <Route path={PagePath.DebugChat} element={DebugChat} />
+
           <Route path={PagePath.Err404} element={NoPower} />
           <Route path={PagePath.Err401} element={NotFound} />
         </Route>

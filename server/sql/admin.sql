@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost
+Source Server         : local
 Source Server Version : 50710
 Source Host           : localhost:3306
-Source Database       : test_crash
+Source Database       : admin
 
 Target Server Type    : MYSQL
 Target Server Version : 50710
 File Encoding         : 65001
 
-Date: 2023-11-24 13:38:15
+Date: 2023-11-25 20:19:34
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,15 +21,15 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
-  `parent` int(11) NOT NULL,
+  `url` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
+  `parent` int(11) DEFAULT '0',
   `sorts` tinyint(4) NOT NULL,
   `status` tinyint(4) NOT NULL,
-  `title` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
-  `icon_style_type` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
+  `icon_style_type` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
   `desc` text CHARACTER SET utf8mb4 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of menu
@@ -114,7 +114,7 @@ CREATE TABLE `user` (
   `desc` text NOT NULL,
   `roles` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user
@@ -123,3 +123,4 @@ INSERT INTO `user` VALUES ('1', '$2b$10$y3AoPqdwZdTd5Z4GPqeKnuohDK7uN4UkYdQ/4jKT
 INSERT INTO `user` VALUES ('12', '$2b$10$NsxTgvhxvYH6qvPeh8QMDeutBqlpzBvVXqhOeZWDRrx9sh7TEZm2S', '1', 'guest', '2023-11-23 22:01:23', '', '', '', '4');
 INSERT INTO `user` VALUES ('13', '$2b$10$GUKntAVyXy80/g5/3EZleONsrhsow5sXCg/e7QJdyvRk4NlX4yBXC', '1', 'admin', '2023-11-24 10:07:58', '', '', '', '2');
 INSERT INTO `user` VALUES ('14', '$2b$10$1FjVIBmMPIJj1Eqf2Xn3weT1w8vn6W5xJd6Zwl6mKRIyETAx2LXVG', '1', 'zyx', '2023-11-24 10:08:10', '', '', '', '3');
+INSERT INTO `user` VALUES ('15', '$2b$10$vNElrcIouKalQVZyLthLk.Pvoj0UDdvjKg2k3walheCxVPEBdEvF2', '1', 'test', '2023-11-25 20:15:56', '', '', '', '4');

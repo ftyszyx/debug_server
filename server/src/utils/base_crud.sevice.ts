@@ -42,8 +42,11 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
     const new_data = this.repository.create();
     const entity = Object.assign(new_data, info);
     await this.recv_data_fix([entity as EntityT]);
+    console.log('get data', entity);
     const res = await this.repository.save(entity as EntityT);
+    console.log('get res', res);
     await this.send_data_fix([res]);
+    console.log('get res2', res);
     return res;
   }
 

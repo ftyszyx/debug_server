@@ -68,7 +68,7 @@ function MenuAdmin() {
         return getMenuTableCols(params);
       }}
       form_fields={FieldConfigList}
-      form_initdata={{ status: Status.Enable } as Menu}
+      form_initdata={{ status: Status.Enable, desc: "", parent: 0, sorts: 1 } as Menu}
       hooks={{
         async after_getdata(datalist) {
           await menu_store.setItems(datalist);

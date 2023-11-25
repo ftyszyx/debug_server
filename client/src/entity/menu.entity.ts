@@ -1,6 +1,6 @@
 import { Status } from "@/config";
 import { Input, Select, TableColumnsType, TreeSelect } from "antd";
-import { OperateCode_All, OperateCode_View, TableColsParams } from "./page.entity";
+import { OperateCode_All, OperateCode_View, OperateCode_edit, TableColsParams } from "./page.entity";
 import { FieldInfo } from "./form.entity";
 import TextArea from "antd/es/input/TextArea";
 import { RenderStatusOps, renderStatusTable } from "@/util/render";
@@ -29,12 +29,6 @@ export const getMenuFormList = (menu_treeinfo: MyTreeInfo<Menu>): FieldInfo[] =>
     },
     {
       field_Element: Input,
-      field_name: "sorts",
-      field_operate: OperateCode_View,
-      label: "排序编号",
-    },
-    {
-      field_Element: Input,
       field_name: "title",
       field_operate: OperateCode_All,
       label: "标题",
@@ -45,6 +39,22 @@ export const getMenuFormList = (menu_treeinfo: MyTreeInfo<Menu>): FieldInfo[] =>
       edit_props: {
         placeholder: "请输入标题",
       },
+    },
+    {
+      field_Element: Input,
+      field_name: "url",
+      field_operate: OperateCode_All,
+      label: "地址",
+      edit_rules: [{ required: true, whitespace: true, message: "必填" }],
+      edit_props: {
+        placeholder: "请输入地址",
+      },
+    },
+    {
+      field_Element: Input,
+      field_name: "sorts",
+      field_operate: OperateCode_edit,
+      label: "排序编号",
     },
     {
       field_name: "status",
@@ -75,7 +85,7 @@ export const getMenuFormList = (menu_treeinfo: MyTreeInfo<Menu>): FieldInfo[] =>
         treeDefaultExpandAll: true,
         treeData: menu_treeinfo.trees,
       },
-      edit_rules: [{ required: true }],
+      // edit_rules: [{ required: true }],
     },
   ];
 };

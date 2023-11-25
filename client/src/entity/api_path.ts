@@ -43,6 +43,8 @@ export enum PagePath {
   AdminPower = "/system/poweradmin",
   AdminMenu = "/system/menuadmin",
   AdminRole = "/system/roleadmin",
+
+  DebugChat = "/debug/chat",
   Err404 = "/404",
   Err401 = "/401",
 }

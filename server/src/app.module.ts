@@ -25,6 +25,8 @@ import { MenuEntity } from './menu/menu.entity';
 import { RolesGuard } from './core/guard/roles.guard';
 import { TypeormLogModule } from './typeorm_log/typeorm_log.module';
 import { TypeormLogService } from './typeorm_log/typeorm_log.service';
+import { EventsGateway } from './events/events.gateway';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -92,6 +94,7 @@ import { TypeormLogService } from './typeorm_log/typeorm_log.service';
     AuthModule,
     RedisModule,
     TypeormLogModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -99,6 +102,7 @@ import { TypeormLogService } from './typeorm_log/typeorm_log.service';
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
+    EventsGateway,
   ],
 })
 export class AppModule implements NestModule {
