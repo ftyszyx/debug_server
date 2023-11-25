@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50710
 File Encoding         : 65001
 
-Date: 2023-11-25 20:19:34
+Date: 2023-11-25 20:25:03
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,7 +29,7 @@ CREATE TABLE `menu` (
   `icon_style_type` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
   `desc` text CHARACTER SET utf8mb4 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of menu
@@ -40,6 +40,8 @@ INSERT INTO `menu` VALUES ('3', '/system/useradmin', '2', '0', '1', '用户管�
 INSERT INTO `menu` VALUES ('4', '/system/roleadmin', '2', '1', '1', '角色管理', 'icon-team', '系统管理/角色管理');
 INSERT INTO `menu` VALUES ('5', '/system/poweradmin', '2', '2', '1', '权限管理', 'icon-safe', '系统管理/权限管理');
 INSERT INTO `menu` VALUES ('6', '/system/menuadmin', '2', '3', '1', '菜单管理', 'icon-menu', '系统管理/菜单管理');
+INSERT INTO `menu` VALUES ('8', '/debug', '0', '1', '1', '调试工具', '', '调试工具');
+INSERT INTO `menu` VALUES ('9', '/debug/chat', '8', '1', '1', 'chat', '', '');
 
 -- ----------------------------
 -- Table structure for power
