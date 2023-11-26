@@ -1,6 +1,6 @@
 # 这是什么
 
-一个管理后台(不带服务端，只是一个 demo,数据是 mock),目的是为了学习 React+antd
+https://socket.io/how-to/use-with-react
 
 # 主要功能
 
