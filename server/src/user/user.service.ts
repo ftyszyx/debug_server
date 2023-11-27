@@ -7,7 +7,7 @@ import { BaseCrudService } from 'src/utils/base_crud.sevice';
 import { ConfigService } from '@nestjs/config';
 import { ChangePassReq } from 'src/entity/api.entity';
 import * as bcrypt from 'bcrypt';
-import { AppDetailConfig } from 'src/entity/other';
+import { AppDetailConfig } from 'src/entity/config';
 
 @Injectable()
 export class UserService extends BaseCrudService<UserEntity> {

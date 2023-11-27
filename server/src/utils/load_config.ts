@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
-import { AppConfig } from 'src/entity/other';
+import { AppConfig } from 'src/entity/config';
 
 // const isProd = process.env.NODE_ENV === 'production';
 export function LoadAppConfig() {

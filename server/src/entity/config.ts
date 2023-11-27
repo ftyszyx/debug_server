@@ -22,9 +22,16 @@ export interface AppRedisConfig {
 export interface AppDetailConfig {
   password_init: string;
 }
+export interface DebugServerConfig {
+  host: string;
+  port: number;
+  retry: number;
+  retry_delay: number;
+}
 export interface AppConfig {
   app: AppDetailConfig;
   http: AppHttpConfig;
   db: AppDbConfig;
   redis: AppRedisConfig;
+  debug_server: DebugServerConfig;
 }

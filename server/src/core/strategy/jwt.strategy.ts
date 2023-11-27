@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtractJwt, StrategyOptions, Strategy } from 'passport-jwt';
 import { RedisService } from 'src/db/redis/redis.service';
-import { AppHttpConfig } from 'src/entity/other';
+import { AppHttpConfig } from 'src/entity/config';
 import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import type { Request } from 'express';

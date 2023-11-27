@@ -17,7 +17,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { HttpExceptionFilter } from './core/filter/http-exception/http-exception.filter';
 import { AuthModule } from './auth/auth.module';
 import { LoadAppConfig } from './utils/load_config';
-import { AppDbConfig } from './entity/other';
+import { AppDbConfig } from './entity/config';
 import { JwtAuthGuard } from './core/guard/jwt-auth.guard';
 import { RedisModule } from './db/redis/redis.module';
 import { RoleEntity } from './role/role.entity';
@@ -25,8 +25,8 @@ import { MenuEntity } from './menu/menu.entity';
 import { RolesGuard } from './core/guard/roles.guard';
 import { TypeormLogModule } from './typeorm_log/typeorm_log.module';
 import { TypeormLogService } from './typeorm_log/typeorm_log.service';
-import { EventsGateway } from './events/events.gateway';
-import { EventsModule } from './events/events.module';
+import { ChatModule } from './chat/chat.module';
+import { DebugModule } from './debug/debug.module';
 
 @Module({
   imports: [
@@ -94,7 +94,8 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     RedisModule,
     TypeormLogModule,
-    EventsModule,
+    ChatModule,
+    DebugModule,
   ],
   controllers: [AppController],
   providers: [
@@ -102,7 +103,6 @@ import { EventsModule } from './events/events.module';
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
-    EventsGateway,
   ],
 })
 export class AppModule implements NestModule {

@@ -4,7 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { RedisClientOptions } from 'redis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppRedisConfig } from 'src/entity/other';
+import { AppRedisConfig } from 'src/entity/config';
 
 @Global()
 @Module({

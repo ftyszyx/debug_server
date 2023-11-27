@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/db/redis/redis.service';
-import { AppHttpConfig } from 'src/entity/other';
+import { AppHttpConfig } from 'src/entity/config';
 import { UserEntity } from 'src/user/user.entity';
 import { getTokenRedisKey } from 'src/utils/redis';
 

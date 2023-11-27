@@ -2,6 +2,9 @@
 
 https://socket.io/how-to/use-with-react
 
+socket.io
+聊天页面来发送和接收命令
+
 # 主要功能
 
 用户管理

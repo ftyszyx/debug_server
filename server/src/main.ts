@@ -5,7 +5,7 @@ import { TransformInterceptor } from './core/interceptor/transform/transform.int
 import { ValidationPipe } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { AppHttpConfig } from './entity/other';
+import { AppHttpConfig } from './entity/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

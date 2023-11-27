@@ -6,7 +6,7 @@ import { LocalStrategy } from 'src/core/strategy/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { AppHttpConfig } from 'src/entity/other';
+import { AppHttpConfig } from 'src/entity/config';
 
 const jwtModule = JwtModule.registerAsync({
   inject: [ConfigService],

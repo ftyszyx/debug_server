@@ -19,3 +19,6 @@ redis:
   db: 1
   ttl: 3600
   password: 123456
+debug_server:
+  host: localhost
+  port: 8888
