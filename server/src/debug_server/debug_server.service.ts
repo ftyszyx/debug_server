@@ -9,8 +9,9 @@ const ERROR_EVENT = 'error';
 const CLOSE_EVENT = 'close';
 const HEAD_SIZE = 12;
 const LogTag = 'debugServer';
+export interface ClientSocketItem {}
 @Injectable()
-export class DebugService {
+export class DebugServerService {
   protected server: NetSocket;
   private isExplicitlyTerminated = false;
   private retryAttemptsCount = 0;

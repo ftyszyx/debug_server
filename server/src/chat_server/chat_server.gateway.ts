@@ -14,7 +14,7 @@ import { Server, Socket } from 'socket.io';
 
 const LogTagName = 'chat';
 @WebSocketGateway({ cors: { origin: '*' } })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
+export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(@Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly myLogger: WinstonLogger) {}
   handleDisconnect(client: Socket) {
     this.myLogger.log(`disconnect:${client.id}`, LogTagName);

@@ -25,8 +25,8 @@ import { MenuEntity } from './menu/menu.entity';
 import { RolesGuard } from './core/guard/roles.guard';
 import { TypeormLogModule } from './typeorm_log/typeorm_log.module';
 import { TypeormLogService } from './typeorm_log/typeorm_log.service';
-import { ChatModule } from './chat/chat.module';
-import { DebugModule } from './debug/debug.module';
+import { ChatServerModule } from './chat_server/chat_server.module';
+import { DebugServerModule } from './debug_server/debug_server.module';
 
 @Module({
   imports: [
@@ -94,8 +94,8 @@ import { DebugModule } from './debug/debug.module';
     AuthModule,
     RedisModule,
     TypeormLogModule,
-    ChatModule,
-    DebugModule,
+    ChatServerModule,
+    DebugServerModule,
   ],
   controllers: [AppController],
   providers: [
