@@ -27,6 +27,9 @@ import { TypeormLogModule } from './typeorm_log/typeorm_log.module';
 import { TypeormLogService } from './typeorm_log/typeorm_log.service';
 import { ChatServerModule } from './chat_server/chat_server.module';
 import { DebugServerModule } from './debug_server/debug_server.module';
+import { MyLogModule } from './my_log/my_log.module';
+import { DebugClientModule } from './debug_client/debug_client.module';
+import { MyLogEntity } from './my_log/my_log.entity';
 
 @Module({
   imports: [
@@ -74,7 +77,7 @@ import { DebugServerModule } from './debug_server/debug_server.module';
         return {
           name: 'test-crash',
           type: 'mysql', // 数据库类型
-          entities: [UserEntity, PowerEntity, RoleEntity, MenuEntity], // 数据表实体
+          entities: [UserEntity, PowerEntity, RoleEntity, MenuEntity, MyLogEntity], // 数据表实体
           host: appconfig.host, // 主机，默认为localhost
           port: appconfig.port, // 端口号
           username: appconfig.user, // 用户名
@@ -83,7 +86,7 @@ import { DebugServerModule } from './debug_server/debug_server.module';
           // timezone: '+08:00', //服务器上配置的时区
           logging: true,
           logger: log, // 'advanced-console',
-          synchronize: false, //根据实体自动创建数据库表， 生产环境建议关闭
+          synchronize: true, //根据实体自动创建数据库表， 生产环境建议关闭
         };
       },
     }),
@@ -96,6 +99,8 @@ import { DebugServerModule } from './debug_server/debug_server.module';
     TypeormLogModule,
     ChatServerModule,
     DebugServerModule,
+    MyLogModule,
+    DebugClientModule,
   ],
   controllers: [AppController],
   providers: [
