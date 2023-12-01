@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   ConnectedSocket,
   MessageBody,
@@ -11,16 +12,22 @@ import {
   WsResponse,
 } from '@nestjs/websockets';
 import { WINSTON_MODULE_NEST_PROVIDER, WinstonLogger } from 'nest-winston';
+import { Observable } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
+import { WebClientReq } from 'src/entity/debug.entity';
 import { UserEntity } from 'src/user/user.entity';
-
+export const HEART_BEAT_INTERVAL = 3000;
 const LogTagName = 'chatServer';
 export class ChatServerClient {
+  public lastActiveTime: number;
   constructor(
     public user: UserEntity,
     public socket: Socket,
   ) {}
+  isActive(): boolean {
+    return Date.now() - this.lastActiveTime < HEART_BEAT_INTERVAL * 2;
+  }
 }
 
 @WebSocketGateway({ cors: { origin: '*' } })
@@ -29,6 +36,7 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly myLogger: WinstonLogger,
     private auth: AuthService,
+    private event: EventEmitter2,
   ) {}
 
   @WebSocketServer()
@@ -52,10 +60,35 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
     this.myLogger.log(`chat user disconnect:${client_info.user.id}:${client_info.user.user_name}`, LogTagName);
   }
 
+  @SubscribeMessage('heartbeat')
+  heartbeat(@ConnectedSocket() client: Socket): WsResponse<unknown> {
+    const user_id = client['user_id'];
+    const client_info = this.clients.get(user_id);
+    this.myLogger.log(`heartbeat:${user_id}`, LogTagName);
+    client_info.lastActiveTime = Date.now();
+    return { event: 'heartbeat', data: 'ok' };
+  }
+
+  async sendMessage(userid: number, event_name: string, data: any) {
+    const client = this.clients.get(userid);
+    if (!client) {
+      this.myLogger.log(`client is not found:${userid}`, LogTagName);
+      return;
+    }
+    if (client.isActive() == false) {
+      this.myLogger.log(`client is offline:${userid}`, LogTagName);
+      return;
+    }
+    client.socket.emit(event_name, data);
+  }
+  async sendDebugResp(userid: number, data: string) {
+    await this.sendMessage(userid, 'debug_cmd', data);
+  }
+
   @SubscribeMessage('debug_cmd')
-  handleMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket): WsResponse<unknown> {
-    // this.myLogger.log('get data', data, LogTagName);
-    // return data;
-    return { event: 'chat', data };
+  handleDebugMsg(@MessageBody() data: WebClientReq): Observable<WsResponse<unknown>> {
+    this.myLogger.log(`get debugcmd data:${data}`, LogTagName);
+    this.event.emit('chat.debug_cmd', data);
+    return;
   }
 }
