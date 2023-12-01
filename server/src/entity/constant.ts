@@ -21,6 +21,8 @@ export enum ModuleType {
   Role = 'role',
   Power = 'power',
   Menu = 'menu',
+  Debug_client = 'debug_client',
+  Log = 'log',
 }
 
 export enum PowerCodeType {

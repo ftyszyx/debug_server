@@ -4,6 +4,6 @@ import { DebugClientController } from './debug_client.controller';
 
 @Module({
   controllers: [DebugClientController],
-  providers: [DebugClientService]
+  providers: [DebugClientService],
 })
 export class DebugClientModule {}

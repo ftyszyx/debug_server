@@ -5,9 +5,9 @@ export class MyLogEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int')
+  @Column({ length: 50 })
   @Index('logtype')
-  log_type: number;
+  log_type: string;
 
   @Column('int')
   @Index('userid')

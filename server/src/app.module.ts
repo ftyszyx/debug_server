@@ -17,7 +17,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { HttpExceptionFilter } from './core/filter/http-exception/http-exception.filter';
 import { AuthModule } from './auth/auth.module';
 import { LoadAppConfig } from './utils/load_config';
-import { AppDbConfig } from './entity/config';
+import { AppDbConfig, AppHttpConfig } from './entity/config';
 import { JwtAuthGuard } from './core/guard/jwt-auth.guard';
 import { RedisModule } from './db/redis/redis.module';
 import { RoleEntity } from './role/role.entity';
@@ -30,12 +30,29 @@ import { DebugServerModule } from './debug_server/debug_server.module';
 import { MyLogModule } from './my_log/my_log.module';
 import { DebugClientModule } from './debug_client/debug_client.module';
 import { MyLogEntity } from './my_log/my_log.entity';
+import { DebugClientEntity } from './debug_client/debug_client.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [LoadAppConfig],
+    }),
+    EventEmitterModule.forRoot(),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      global: true,
+      useFactory: async (configservice: ConfigService) => {
+        const httpconfig = configservice.get<AppHttpConfig>('http');
+        return {
+          secretOrPrivateKey: httpconfig.token_secret_key,
+          signOptions: {
+            // expiresIn: httpconfig.token_expire_time
+          },
+        };
+      },
     }),
     WinstonModule.forRoot({
       transports: [
@@ -77,7 +94,7 @@ import { MyLogEntity } from './my_log/my_log.entity';
         return {
           name: 'test-crash',
           type: 'mysql', // 数据库类型
-          entities: [UserEntity, PowerEntity, RoleEntity, MenuEntity, MyLogEntity], // 数据表实体
+          entities: [UserEntity, PowerEntity, RoleEntity, MenuEntity, MyLogEntity, DebugClientEntity], // 数据表实体
           host: appconfig.host, // 主机，默认为localhost
           port: appconfig.port, // 端口号
           username: appconfig.user, // 用户名

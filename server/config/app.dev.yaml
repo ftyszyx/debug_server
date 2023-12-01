@@ -7,6 +7,7 @@ http:
   # token_expire_time: '4h'
   #token 失效时间 单位毫秒
   token_expire_in: 144000000
+
 db:
   host: localhost
   port: 3306

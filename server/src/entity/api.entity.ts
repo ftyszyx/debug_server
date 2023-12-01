@@ -61,3 +61,8 @@ export class ChangeMyPassReq {
 }
 export type ListReq<T> = PageReq & SearchFormDef<T> & OrderByReq<T>;
 export class ListReqSwagger extends IntersectionType(PageReq, WhereSwaggerDef, OrderBySwaggerDef) {}
+
+export interface TokenPayload {
+  user_name: string;
+  id: number;
+}
