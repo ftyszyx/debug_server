@@ -56,7 +56,7 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
     return res_list;
   }
 
-  abstract getListBuilder(qb: SelectQueryBuilder<EntityT>);
+  // abstract getListBuilder(qb: SelectQueryBuilder<EntityT>);
   async getList(query: ListReq<EntityT>): Promise<ListResp<EntityT>> {
     const qb = await this.repository.createQueryBuilder(this.table_name);
     // this.getListBuilder(qb);

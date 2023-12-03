@@ -9,3 +9,7 @@ export function getRoleRedisKey(roleid: number) {
 export function getPowerRedisKey(powerid: number) {
   return `power_${powerid}`;
 }
+
+export function getDebugClientKey(guid: string) {
+  return `client_${guid}`;
+}

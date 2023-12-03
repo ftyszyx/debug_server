@@ -1,15 +1,24 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { HttpException, Inject, Injectable, LoggerService } from '@nestjs/common';
 import { Server as NetSocket, Socket } from 'net';
 import * as net from 'net';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { DebugServerConfig } from 'src/entity/config';
 import { ClientCmdType } from 'src/entity/debug.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DebugClientEntity } from 'src/debug_client/debug_client.entity';
+import { Repository } from 'typeorm';
+import { cli } from 'winston/lib/winston/config';
+import { threadId } from 'worker_threads';
+import { error } from 'console';
 const HEAD_SIZE = 12;
 const LogTag = 'debugServer';
 export class ClientSocketItem {
   onMessage: (cmd: string, msg: string) => Promise<void>;
   SendMessge: (msg: string) => void;
+  adress: string = '';
+  os: string = '';
+  guid: string = '';
   constructor(public socket: Socket) {}
 }
 
@@ -21,8 +30,10 @@ export class DebugServerService {
   private config: DebugServerConfig;
   private connect_id = 1;
   public clients = new Map<number, ClientSocketItem>();
+  public clients_byguid = new Map<string, ClientSocketItem>();
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
+    @InjectRepository(DebugClientEntity) private readonly debugClientsRepository: Repository<DebugClientEntity>,
     private config_all: ConfigService,
   ) {
     this.config = config_all.get<DebugServerConfig>('debug_server');
@@ -34,7 +45,12 @@ export class DebugServerService {
     this.server.close();
   }
 
-  public sendMsgTo(client_id: number, msg: string) {}
+  async sendMsgTo(guid: string, msg: string) {
+    const client = this.clients_byguid.get(guid);
+    if (client == null) throw new Error('not client');
+    // client.socket.write()
+  }
+
   bindHandler(socket: Socket) {
     const id = socket['id'];
     this.logger.log(`client bind ip:${JSON.stringify(socket.address())} id:${id}`, LogTag);
@@ -61,10 +77,19 @@ export class DebugServerService {
     const cmd_end = text.indexOf(' ');
 
     if (cmd_end > 0) {
-      const cmdtext = text.slice(0, cmd_end);
-      const parmas = text.slice(cmd_end);
+      const cmdtext = text.slice(0, cmd_end).trim();
+      const parmas = text.slice(cmd_end).trim();
       if (cmdtext == ClientCmdType.SET) {
         const setarr = parmas.split(' ');
+        for (let i = 0; i < setarr.length; i++) {
+          const setitem_arr = setarr[i].trim().split('=');
+          const set_name = setitem_arr[0].trim();
+          const set_value = setitem_arr[1].trim();
+          client[set_name] = set_value;
+        }
+        if (this.clients_byguid.has(client.guid) == false) {
+          this.clients_byguid.set(client.guid, client);
+        }
       }
       client.onMessage(cmdtext, parmas);
       return;
@@ -75,6 +100,7 @@ export class DebugServerService {
   handleClose(): undefined | number | NodeJS.Timer {
     this.connect_id = 0;
     this.clients.clear();
+    this.clients_byguid.clear();
     if (this.isExplicitlyTerminated || this.retryAttemptsCount >= this.config.retry) {
       this.logger.log('tcp server close', LogTag);
       return undefined;
