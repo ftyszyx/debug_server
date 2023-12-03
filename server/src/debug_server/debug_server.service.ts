@@ -4,6 +4,7 @@ import * as net from 'net';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { DebugServerConfig } from 'src/entity/config';
+import { ClientCmdType } from 'src/entity/debug.entity';
 const HEAD_SIZE = 12;
 const LogTag = 'debugServer';
 export class ClientSocketItem {
@@ -59,7 +60,16 @@ export class DebugServerService {
     const client = this.clients.get(id);
     const cmd_end = text.indexOf(' ');
 
-    if (cmd_end > 0) client.onMessage(text);
+    if (cmd_end > 0) {
+      const cmdtext = text.slice(0, cmd_end);
+      const parmas = text.slice(cmd_end);
+      if (cmdtext == ClientCmdType.SET) {
+        const setarr = parmas.split(' ');
+      }
+      client.onMessage(cmdtext, parmas);
+      return;
+    }
+    client.onMessage(ClientCmdType.RESP, text);
   }
 
   handleClose(): undefined | number | NodeJS.Timer {

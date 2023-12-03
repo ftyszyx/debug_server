@@ -14,7 +14,7 @@
      cmd:string
      data:key=value 空格分隔
    }
-```
+``` 
 
 ```
    server_req{

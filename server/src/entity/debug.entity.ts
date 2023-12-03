@@ -1,3 +1,4 @@
+import { type } from 'os';
 import { ApiResp } from './api.entity';
 
 export interface ClientReq {
@@ -11,3 +12,8 @@ export interface WebClientReq extends ClientReq {
 }
 
 export interface WebClientResp extends ApiResp<string> {}
+
+export enum ClientCmdType {
+  RESP = 'resp',
+  SET = 'set',
+}
