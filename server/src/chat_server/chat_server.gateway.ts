@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   ConnectedSocket,
@@ -19,6 +19,7 @@ import { WebClientReq } from 'src/entity/debug.entity';
 import { UserEntity } from 'src/user/user.entity';
 export const HEART_BEAT_INTERVAL = 3000;
 const LogTagName = 'chatServer';
+const UserIdKey = 'user_id';
 export class ChatServerClient {
   public lastActiveTime: number;
   constructor(
@@ -31,6 +32,7 @@ export class ChatServerClient {
 }
 
 @WebSocketGateway({ cors: { origin: '*' } })
+@Injectable()
 export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   public clients = new Map<number, ChatServerClient>();
   constructor(
@@ -49,12 +51,12 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
   async handleConnection(client: Socket, ...args: any[]) {
     const user = await this.auth.CheckToken(client.handshake.headers);
     this.clients.set(user.id, new ChatServerClient(user, client));
-    client['user_id'] = user.id;
+    client[UserIdKey] = user.id;
     this.myLogger.log(`chat user connect:${user.id}:${user.user_name}`, LogTagName);
   }
 
   handleDisconnect(client: Socket) {
-    const user_id = client['user_id'];
+    const user_id = client[UserIdKey];
     const client_info = this.clients.get(user_id);
     this.clients.delete(user_id);
     this.myLogger.log(`chat user disconnect:${client_info.user.id}:${client_info.user.user_name}`, LogTagName);
@@ -62,7 +64,7 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
 
   @SubscribeMessage('heartbeat')
   heartbeat(@ConnectedSocket() client: Socket): WsResponse<unknown> {
-    const user_id = client['user_id'];
+    const user_id = client[UserIdKey];
     const client_info = this.clients.get(user_id);
     this.myLogger.log(`heartbeat:${user_id}`, LogTagName);
     client_info.lastActiveTime = Date.now();
@@ -86,7 +88,8 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
   }
 
   @SubscribeMessage('debug_cmd')
-  handleDebugMsg(@MessageBody() data: WebClientReq): Observable<WsResponse<unknown>> {
+  handleDebugMsg(@MessageBody() data: WebClientReq, @ConnectedSocket() socket: Socket): Observable<WsResponse<unknown>> {
+    data.from_user_id = socket[UserIdKey];
     this.myLogger.log(`get debugcmd data:${data}`, LogTagName);
     this.event.emit('chat.debug_cmd', data);
     return;

@@ -7,7 +7,7 @@ import { DebugServerConfig } from 'src/entity/config';
 const HEAD_SIZE = 12;
 const LogTag = 'debugServer';
 export class ClientSocketItem {
-  onMessage: (msg: string) => Promise<void>;
+  onMessage: (cmd: string, msg: string) => Promise<void>;
   SendMessge: (msg: string) => void;
   constructor(public socket: Socket) {}
 }
@@ -28,7 +28,13 @@ export class DebugServerService {
     this.init();
   }
 
-  public bindHandler(socket: Socket) {
+  public close() {
+    this.isExplicitlyTerminated = true;
+    this.server.close();
+  }
+
+  public sendMsgTo(client_id: number, msg: string) {}
+  bindHandler(socket: Socket) {
     const id = socket['id'];
     this.logger.log(`client bind ip:${JSON.stringify(socket.address())} id:${id}`, LogTag);
     socket.on('data', async (msg: Buffer) => this.handleClientMessage(socket, msg));
@@ -42,7 +48,7 @@ export class DebugServerService {
     });
   }
 
-  public async handleClientMessage(socket: Socket, msg: Buffer) {
+  async handleClientMessage(socket: Socket, msg: Buffer) {
     const id = socket['id'];
     this.logger.log(`debugserver get id:${id} data:${msg.byteLength}`, LogTag);
     const len = msg.byteLength;
@@ -51,10 +57,12 @@ export class DebugServerService {
     const text = Buffer.from(body).toString();
     this.logger.log(`get text:${text}`, LogTag);
     const client = this.clients.get(id);
-    client.onMessage(text);
+    const cmd_end = text.indexOf(' ');
+
+    if (cmd_end > 0) client.onMessage(text);
   }
 
-  public handleClose(): undefined | number | NodeJS.Timer {
+  handleClose(): undefined | number | NodeJS.Timer {
     this.connect_id = 0;
     this.clients.clear();
     if (this.isExplicitlyTerminated || this.retryAttemptsCount >= this.config.retry) {
@@ -64,19 +72,15 @@ export class DebugServerService {
     ++this.retryAttemptsCount;
     return setTimeout(() => this.server.listen(this.config.port, this.config.port), this.config.retry_delay);
   }
-  public close() {
-    this.isExplicitlyTerminated = true;
-    this.server.close();
-  }
 
-  public handleConnect(socket: Socket) {
+  handleConnect(socket: Socket) {
     const new_socketid = this.connect_id++;
     socket['id'] = new_socketid;
     this.logger.log(`client connect id:${new_socketid} ip:${JSON.stringify(socket.address())}`, LogTag);
     this.clients.set(new_socketid, new ClientSocketItem(socket));
   }
 
-  private init() {
+  init() {
     this.server = net.createServer(this.bindHandler.bind(this));
     this.server.on('error', (err) => {
       this.logger.error(`tcp server err ${err.message}`);
