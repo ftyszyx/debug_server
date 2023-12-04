@@ -8,9 +8,6 @@ import { ClientCmdType } from 'src/entity/debug.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DebugClientEntity } from 'src/debug_client/debug_client.entity';
 import { Repository } from 'typeorm';
-import { cli } from 'winston/lib/winston/config';
-import { threadId } from 'worker_threads';
-import { error } from 'console';
 const HEAD_SIZE = 12;
 const LogTag = 'debugServer';
 export class ClientSocketItem {
@@ -19,6 +16,7 @@ export class ClientSocketItem {
   adress: string = '';
   os: string = '';
   guid: string = '';
+
   constructor(public socket: Socket) {}
 }
 

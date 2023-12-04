@@ -24,13 +24,15 @@ export class DebugClientService extends BaseCrudService<DebugClientEntity> {
     console.log('get req', payload);
   }
 
-  async getOrCreateOne(guid: string, info: Partial<DebugClientEntity>) {
+  async getOrCreateOne(guid: string) {
     const key = getDebugClientKey(guid);
     const res = await this.redis.get<DebugClientEntity>(key);
     if (res != null) return res;
     const old_value = await this.DebugClientRepository.findOne({ where: { guid: guid } });
     if (old_value) {
+      return old_value;
     }
+    // await this.DebugClientRepository.insert();
 
     return res;
   }
