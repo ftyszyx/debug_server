@@ -7,6 +7,14 @@
 1. 聊天命令发送到服务器，服务器再将命令转发给设备
 1.  增加一个日志表，记录所有与服务器的交互.
 
+debug_server:
+有设备连上，通过client_model添加数据库
+
+debug_client_model
+
+is_connect(guid)
+
+
    客户端与服务端的交互
    ```
    client_req

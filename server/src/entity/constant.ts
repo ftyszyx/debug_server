@@ -31,3 +31,12 @@ export enum PowerCodeType {
   See = 'see',
   Del = 'del',
 }
+
+export enum EventNameType {
+  //chat server
+  ChatCmdEvnet = 'chat.debug_cmd',
+
+  //debug server
+  DebugServerClientConnect = 'debugserver.clientconnect',
+  DebugServerClientResp = 'debugserver.clientMsgResp',
+}

@@ -15,6 +15,7 @@ import { WINSTON_MODULE_NEST_PROVIDER, WinstonLogger } from 'nest-winston';
 import { Observable } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
+import { EventNameType } from 'src/entity/constant';
 import { WebClientReq } from 'src/entity/debug.entity';
 import { UserEntity } from 'src/user/user.entity';
 export const HEART_BEAT_INTERVAL = 3000;
@@ -91,7 +92,7 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
   handleDebugMsg(@MessageBody() data: WebClientReq, @ConnectedSocket() socket: Socket): Observable<WsResponse<unknown>> {
     data.from_user_id = socket[UserIdKey];
     this.myLogger.log(`get debugcmd data:${data}`, LogTagName);
-    this.event.emit('chat.debug_cmd', data);
+    this.event.emit(EventNameType.ChatCmdEvnet, data);
     return;
   }
 }

@@ -1,4 +1,3 @@
-import { type } from 'os';
 import { ApiResp } from './api.entity';
 
 export interface ClientReq {
@@ -7,7 +6,7 @@ export interface ClientReq {
 }
 
 export interface WebClientReq extends ClientReq {
-  client_id: number;
+  client_guid: string;
   from_user_id: number;
 }
 

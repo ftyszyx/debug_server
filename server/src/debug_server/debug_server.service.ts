@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { Server as NetSocket, Socket } from 'net';
 import * as net from 'net';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -8,8 +8,8 @@ import { ClientCmdType } from 'src/entity/debug.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DebugClientEntity } from 'src/debug_client/debug_client.entity';
 import { Repository } from 'typeorm';
-import { buffer, text } from 'stream/consumers';
-import internal from 'stream';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventNameType } from 'src/entity/constant';
 const HEAD_SIZE = 12;
 const LogTag = 'debugServer';
 export class ClientSocketItem {
@@ -35,6 +35,7 @@ export class DebugServerService {
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
     @InjectRepository(DebugClientEntity) private readonly debugClientsRepository: Repository<DebugClientEntity>,
     private config_all: ConfigService,
+    private event: EventEmitter2,
   ) {
     this.config = config_all.get<DebugServerConfig>('debug_server');
     this.init();
@@ -101,8 +102,9 @@ export class DebugServerService {
         if (this.clients_byguid.has(client.guid) == false) {
           this.clients_byguid.set(client.guid, client);
         }
+        this.event.emit(EventNameType.DebugServerClientConnect, client);
       }
-      client.onMessage(cmdtext, parmas);
+      client.onMessage(ClientCmdType.SET, parmas);
       return;
     }
     client.onMessage(ClientCmdType.RESP, text);
