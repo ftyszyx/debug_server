@@ -8,6 +8,8 @@ import { ClientCmdType } from 'src/entity/debug.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DebugClientEntity } from 'src/debug_client/debug_client.entity';
 import { Repository } from 'typeorm';
+import { buffer, text } from 'stream/consumers';
+import internal from 'stream';
 const HEAD_SIZE = 12;
 const LogTag = 'debugServer';
 export class ClientSocketItem {
@@ -16,7 +18,7 @@ export class ClientSocketItem {
   adress: string = '';
   os: string = '';
   guid: string = '';
-
+  protocol_address: number = 0;
   constructor(public socket: Socket) {}
 }
 
@@ -46,7 +48,14 @@ export class DebugServerService {
   async sendMsgTo(guid: string, msg: string) {
     const client = this.clients_byguid.get(guid);
     if (client == null) throw new Error('not client');
-    // client.socket.write()
+    const text_arr = Buffer.from(msg, 'utf-8');
+    const total_len = HEAD_SIZE + text_arr.length;
+    const send_buffer = Buffer.alloc(total_len);
+    send_buffer.writeInt32BE(total_len);
+    send_buffer.writeInt32BE(0);
+    send_buffer.writeInt32BE(client.protocol_address);
+    send_buffer.write(msg, 'utf-8');
+    client.socket.write(send_buffer);
   }
 
   bindHandler(socket: Socket) {
@@ -68,11 +77,15 @@ export class DebugServerService {
     this.logger.log(`debugserver get id:${id} data:${msg.byteLength}`, LogTag);
     const len = msg.byteLength;
     if (len <= HEAD_SIZE) return;
+    const package_len = msg.readInt32BE();
+    const package_from = msg.readInt32BE();
+    const package_to = msg.readInt32BE();
     const body = msg.buffer.slice(HEAD_SIZE, len);
     const text = Buffer.from(body).toString();
-    this.logger.log(`get text:${text}`, LogTag);
+    this.logger.log(`${package_len}:${package_from}->${package_to} text:${text}`, LogTag);
     const client = this.clients.get(id);
     const cmd_end = text.indexOf(' ');
+    client.protocol_address = package_from;
 
     if (cmd_end > 0) {
       const cmdtext = text.slice(0, cmd_end).trim();

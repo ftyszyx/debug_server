@@ -11,7 +11,7 @@ import { getDebugClientKey } from 'src/utils/redis';
 @Injectable()
 export class DebugClientService extends BaseCrudService<DebugClientEntity> {
   constructor(
-    @InjectRepository(DebugClientService)
+    @InjectRepository(DebugClientEntity)
     private readonly DebugClientRepository: Repository<DebugClientEntity>,
     private redis: RedisService,
   ) {
