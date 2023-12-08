@@ -30,6 +30,12 @@
    cmd:set 
    data:key=value 空格分隔
 ```
+协议包头
+```
+   *(int*)(ptr + 0) = pack.size;
+                *(int*)(ptr + 4) = pack.from;
+                *(int*)(ptr + 8) = pack.to;
+```
    
    
    
