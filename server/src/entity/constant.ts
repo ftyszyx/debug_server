@@ -40,3 +40,7 @@ export enum EventNameType {
   DebugServerClientConnect = 'debugserver.clientconnect',
   DebugServerClientResp = 'debugserver.clientMsgResp',
 }
+
+export enum SocketIoMessageType {
+  Debug_cmd_req = 'debug_cmd',
+}

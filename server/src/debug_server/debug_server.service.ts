@@ -46,14 +46,14 @@ export class DebugServerService {
     this.server.close();
   }
 
-  async sendMsgTo(guid: string, msg: string) {
+  async sendMsgTo(from_user_id: number, guid: string, msg: string) {
     const client = this.clients_byguid.get(guid);
     if (client == null) throw new Error('not client');
     const text_arr = Buffer.from(msg, 'utf-8');
     const total_len = HEAD_SIZE + text_arr.length;
     const send_buffer = Buffer.alloc(total_len);
     send_buffer.writeInt32BE(total_len);
-    send_buffer.writeInt32BE(0);
+    send_buffer.writeInt32BE(from_user_id);
     send_buffer.writeInt32BE(client.protocol_address);
     send_buffer.write(msg, 'utf-8');
     client.socket.write(send_buffer);
@@ -80,10 +80,10 @@ export class DebugServerService {
     if (len <= HEAD_SIZE) return;
     const package_len = msg.readInt32BE();
     const package_from = msg.readInt32BE();
-    const package_to = msg.readInt32BE();
+    const to_userid = msg.readInt32BE();
     const body = msg.buffer.slice(HEAD_SIZE, len);
     const text = Buffer.from(body).toString();
-    this.logger.log(`${package_len}:${package_from}->${package_to} text:${text}`, LogTag);
+    this.logger.log(`${package_len}:${package_from}->${to_userid} text:${text}`, LogTag);
     const client = this.clients.get(id);
     const cmd_end = text.indexOf(' ');
     client.protocol_address = package_from;
@@ -108,7 +108,7 @@ export class DebugServerService {
       // client.onMessage(ClientCmdType.SET, parmas);
       return;
     }
-    client.onMessage(ClientCmdType.RESP, text);
+    this.event.emit(EventNameType.DebugServerClientResp, client, to_userid, text);
   }
 
   handleClose(): undefined | number | NodeJS.Timer {

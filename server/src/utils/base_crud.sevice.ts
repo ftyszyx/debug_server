@@ -4,6 +4,7 @@ import { filterQuery } from 'src/utils/sql.util';
 import { HttpException, Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { Net_Retcode } from 'src/entity/constant';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { RedisService } from 'src/db/redis/redis.service';
 
 @Injectable()
 export abstract class BaseCrudService<EntityT extends object> implements OnModuleInit {
@@ -13,6 +14,8 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
   protected readonly logger: LoggerService;
   @Inject(DataSource)
   protected readonly dataSource: DataSource;
+  @Inject(RedisService)
+  private readonly redis_servece: RedisService;
   protected repository: Repository<EntityT>;
   protected entity: EntityTarget<EntityT>;
   onModuleInit() {
@@ -54,6 +57,20 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
     const res_list = await this.repository.createQueryBuilder(this.table_name).getMany();
     await this.send_data_fix(res_list);
     return res_list;
+  }
+
+  async getOrAddWithcache(info: Partial<EntityT>, find_key: string, find_value: string) {
+    const key = `${this.table_name}_${find_key}_${find_value}`;
+    const res = await this.redis_servece.get<EntityT>(key);
+    if (res != null) return res;
+    const old_value = await this.repository.findOne({ where: { [find_key]: find_value } as FindOptionsWhere<EntityT> });
+    if (old_value) {
+      await this.redis_servece.set(key, old_value, 0);
+      return old_value;
+    }
+    const new_value = await this.addOne(info);
+    await this.redis_servece.set(key, new_value, 0);
+    return new_value;
   }
 
   // abstract getListBuilder(qb: SelectQueryBuilder<EntityT>);
