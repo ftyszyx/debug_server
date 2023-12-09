@@ -103,8 +103,9 @@ export class DebugServerService {
           this.clients_byguid.set(client.guid, client);
         }
         this.event.emit(EventNameType.DebugServerClientConnect, client);
+        return;
       }
-      client.onMessage(ClientCmdType.SET, parmas);
+      // client.onMessage(ClientCmdType.SET, parmas);
       return;
     }
     client.onMessage(ClientCmdType.RESP, text);
