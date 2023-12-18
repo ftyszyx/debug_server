@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { socket } from "@/util/socket";
 import { Button, Space } from "antd";
-export default function DebugChat() {
+export default function DebugTerminal() {
   const [isConnect, setIsConnected] = useState(false);
   const [fooEvents, setFooEvents] = useState([]);
   useEffect(() => {

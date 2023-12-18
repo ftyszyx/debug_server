@@ -14,7 +14,7 @@ const [Home, Login, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin, DebugChat] = [
   () => import("@/pages/system/power_admin"),
   () => import("@/pages/system/role_admin"),
   () => import("@/pages/system/user_admin"),
-  () => import("@/pages/debug/chat"),
+  () => import("@/pages/debug/debug_terminal"),
 ].map((item: any) => {
   const TmpLoad = React.lazy(item);
   return (
