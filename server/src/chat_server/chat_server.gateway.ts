@@ -15,12 +15,13 @@ import { WINSTON_MODULE_NEST_PROVIDER, WinstonLogger } from 'nest-winston';
 import { Observable } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
-import { EventNameType } from 'src/entity/constant';
+import { EventNameType, SocketIoMessageType } from 'src/entity/constant';
 import { WebClientReq } from 'src/entity/debug.entity';
 import { UserEntity } from 'src/user/user.entity';
 export const HEART_BEAT_INTERVAL = 3000;
 const LogTagName = 'chatServer';
 const UserIdKey = 'user_id';
+
 export class ChatServerClient {
   public lastActiveTime: number;
   constructor(
@@ -88,7 +89,7 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
     await this.sendMessage(userid, 'debug_cmd', data);
   }
 
-  @SubscribeMessage('debug_cmd')
+  @SubscribeMessage(SocketIoMessageType.Debug_cmd_req)
   handleDebugMsg(@MessageBody() data: WebClientReq, @ConnectedSocket() socket: Socket): Observable<WsResponse<unknown>> {
     data.from_user_id = socket[UserIdKey];
     this.myLogger.log(`get debugcmd data:${data}`, LogTagName);
