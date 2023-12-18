@@ -1,7 +1,7 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : local
+Source Server         : localhost
 Source Server Version : 50710
 Source Host           : localhost:3306
 Source Database       : admin
@@ -10,10 +10,48 @@ Target Server Type    : MYSQL
 Target Server Version : 50710
 File Encoding         : 65001
 
-Date: 2023-11-25 20:25:03
+Date: 2023-12-18 18:18:23
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for debug_client
+-- ----------------------------
+DROP TABLE IF EXISTS `debug_client`;
+CREATE TABLE `debug_client` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `guid` varchar(255) NOT NULL,
+  `system_type` varchar(50) NOT NULL,
+  `desc` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `guid` (`guid`),
+  KEY `system` (`system_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of debug_client
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for log
+-- ----------------------------
+DROP TABLE IF EXISTS `log`;
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `info` text NOT NULL,
+  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `log_type` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `userid` (`user_id`),
+  KEY `logtype` (`log_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of log
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for menu
@@ -21,27 +59,27 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
-  `parent` int(11) DEFAULT '0',
+  `url` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+  `parent` int(11) NOT NULL,
   `sorts` tinyint(4) NOT NULL,
   `status` tinyint(4) NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
-  `icon_style_type` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
   `desc` text CHARACTER SET utf8mb4 NOT NULL,
+  `title` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+  `icon_style_type` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of menu
 -- ----------------------------
-INSERT INTO `menu` VALUES ('1', '/home', '0', '0', '1', '首页', 'icon-home', '首页');
-INSERT INTO `menu` VALUES ('2', '/system', '0', '1', '1', '系统管理', 'icon-setting', '系统管理');
-INSERT INTO `menu` VALUES ('3', '/system/useradmin', '2', '0', '1', '用户管理', 'icon-user', '系统管理/用户管理');
-INSERT INTO `menu` VALUES ('4', '/system/roleadmin', '2', '1', '1', '角色管理', 'icon-team', '系统管理/角色管理');
-INSERT INTO `menu` VALUES ('5', '/system/poweradmin', '2', '2', '1', '权限管理', 'icon-safe', '系统管理/权限管理');
-INSERT INTO `menu` VALUES ('6', '/system/menuadmin', '2', '3', '1', '菜单管理', 'icon-menu', '系统管理/菜单管理');
-INSERT INTO `menu` VALUES ('8', '/debug', '0', '1', '1', '调试工具', '', '调试工具');
-INSERT INTO `menu` VALUES ('9', '/debug/chat', '8', '1', '1', 'chat', '', '');
+INSERT INTO `menu` VALUES ('1', '/home', '0', '0', '1', '首页', '首页', 'icon-home');
+INSERT INTO `menu` VALUES ('2', '/system', '0', '1', '1', '系统管理', '系统管理', 'icon-setting');
+INSERT INTO `menu` VALUES ('3', '/system/useradmin', '2', '0', '1', '系统管理/用户管理', '用户管理', 'icon-user');
+INSERT INTO `menu` VALUES ('4', '/system/roleadmin', '2', '1', '1', '系统管理/角色管理', '角色管理', 'icon-team');
+INSERT INTO `menu` VALUES ('5', '/system/poweradmin', '2', '2', '1', '系统管理/权限管理', '权限管理', 'icon-safe');
+INSERT INTO `menu` VALUES ('6', '/system/menuadmin', '2', '3', '1', '系统管理/菜单管理', '菜单管理', 'icon-menu');
+INSERT INTO `menu` VALUES ('8', '/debug', '0', '1', '1', '调试工具', '调试工具', '');
+INSERT INTO `menu` VALUES ('9', '/debug/chat', '8', '1', '1', '调试工具/命令窗口', '命令窗口', '');
 
 -- ----------------------------
 -- Table structure for power
@@ -111,8 +149,8 @@ CREATE TABLE `user` (
   `status` tinyint(4) NOT NULL,
   `user_name` varchar(50) NOT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `phone` varchar(50) NOT NULL DEFAULT '',
-  `email` varchar(50) NOT NULL DEFAULT '',
+  `phone` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
   `desc` text NOT NULL,
   `roles` text NOT NULL,
   PRIMARY KEY (`id`)
