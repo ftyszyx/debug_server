@@ -33,6 +33,7 @@ import { MyLogEntity } from './my_log/my_log.entity';
 import { DebugClientEntity } from './debug_client/debug_client.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
+import { ChatLogEntity } from './chat_server/chat_Log.entity';
 
 @Module({
   imports: [
@@ -94,7 +95,7 @@ import { JwtModule } from '@nestjs/jwt';
         return {
           name: 'test-crash',
           type: 'mysql', // 数据库类型
-          entities: [UserEntity, PowerEntity, RoleEntity, MenuEntity, MyLogEntity, DebugClientEntity], // 数据表实体
+          entities: [UserEntity, PowerEntity, RoleEntity, MenuEntity, MyLogEntity, DebugClientEntity, ChatLogEntity], // 数据表实体
           host: appconfig.host, // 主机，默认为localhost
           port: appconfig.port, // 端口号
           username: appconfig.user, // 用户名

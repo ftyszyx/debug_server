@@ -6,7 +6,7 @@ import { DebugClientEntity } from './debug_client.entity';
 import { ModuleType, PowerCodeType } from 'src/entity/constant';
 import { PowerCode } from 'src/core/decorator/power.decorator';
 
-@Controller('debug-client')
+@Controller('debug_client')
 @ApiTags('deubg_client')
 @ApiBearerAuth()
 export class DebugClientController {
@@ -19,12 +19,19 @@ export class DebugClientController {
     return await this.debugClientService.getList(req_params);
   }
 
+  @Post('getAllValid')
+  @PowerCode({ module: ModuleType.Debug_client, code: PowerCodeType.See })
+  @ApiBody({ type: ListReqSwagger })
+  async getAllvalid() {
+    return await this.debugClientService.getAllConnected();
+  }
+
   @Post('up')
-  @PowerCode({ module: ModuleType.User, code: PowerCodeType.Up })
+  @PowerCode({ module: ModuleType.Debug_client, code: PowerCodeType.Up })
   @ApiBody({
     schema: { type: 'object', properties: { id: { type: 'number' }, data: { $ref: getSchemaPath(DebugClientEntity) } } },
   })
-  async up(@Body() query: UpReq<DebugClientEntity>) {
-    return await this.debugClientService.updateById(query.id, query.data);
+  async up(@Body() query: UpReq<Pick<DebugClientEntity, 'name'>>) {
+    return await this.debugClientService.updateById(query.id, { name: query.data.name });
   }
 }

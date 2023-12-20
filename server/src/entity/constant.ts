@@ -23,6 +23,7 @@ export enum ModuleType {
   Menu = 'menu',
   Debug_client = 'debug_client',
   Log = 'log',
+  ChatLog = 'chat_log',
 }
 
 export enum PowerCodeType {

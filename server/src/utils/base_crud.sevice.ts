@@ -117,7 +117,7 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
     return res_items;
   }
 
-  async updateById(id, info: EntityT): Promise<EntityT> {
+  async updateById(id, info: Partial<EntityT>): Promise<EntityT> {
     const oldone = await this.repository.findOneBy({ id } as FindOptionsWhere<EntityT>);
     if (!oldone) {
       throw new HttpException(`id为${id}数据不存在`, Net_Retcode.ERR);

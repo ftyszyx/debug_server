@@ -34,6 +34,12 @@ export enum ApiPath {
   AddPower = "/api/power/add",
   UpPower = "/api/power/up",
   DelPower = "/api/power/del",
+  //debugClient
+  getClientAllValid = "/api/debug_client/getAllValid",
+  getClientLists = "/api/debug_client/getList",
+  upDebugClient = "/api/debug_client/up",
+  //log
+  getLogList = "/api/my_log/getList",
 }
 
 export enum PagePath {
@@ -43,8 +49,10 @@ export enum PagePath {
   AdminPower = "/system/poweradmin",
   AdminMenu = "/system/menuadmin",
   AdminRole = "/system/roleadmin",
+  AdminLog = "/system/log",
 
-  DebugChat = "/debug/chat",
+  DebugClients = "/debug/clients",
+  DebugTerminal = "/debug/terminal/:id",
   Err404 = "/404",
   Err401 = "/401",
 }

@@ -6,25 +6,24 @@ import { AdminPageUrlInfo } from "@/entity/page.entity";
 import { ApiPath } from "@/entity/api_path";
 import CommonAdminView from "@/components/common_admin_view";
 import { GetTableData } from "@/util/table";
-import { DebugClient, getDebugClientsFormConfig, getDebugClientsTalbeCols } from "@/entity/debug_client.entity";
-export default function DebugClients() {
+import { MyLog, getLogFormConfig, getLogTalbeCols } from "@/entity/log.entity";
+export default function LogAdmin() {
   const userStore = UseUserStore() as UserStore;
   useEffect(() => {}, []);
   const FieldConfigList = useMemo(() => {
-    return getDebugClientsFormConfig();
+    return getLogFormConfig();
   }, []);
   const admin_url_list: AdminPageUrlInfo = useMemo(() => {
     let res: AdminPageUrlInfo = {};
-    if (userStore.HaveRight(PowerCode.DebugClientQuery)) res.getlist = ApiPath.getClientLists;
-    if (userStore.HaveRight(PowerCode.DebugClientUp)) res.up = ApiPath.upDebugClient;
+    if (userStore.HaveRight(PowerCode.LogQuery)) res.getlist = ApiPath.getLogList;
     return res;
   }, [userStore]);
   return (
-    <CommonAdminView<DebugClient>
+    <CommonAdminView<MyLog>
       show_search
       api_urls={admin_url_list}
       get_table_cols={(params) => {
-        return getDebugClientsTalbeCols(params);
+        return getLogTalbeCols(params);
       }}
       can_del={(_data) => false}
       form_fields={FieldConfigList}

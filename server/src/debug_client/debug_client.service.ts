@@ -10,6 +10,7 @@ import { getDebugClientKey } from 'src/utils/redis';
 import { EventNameType, Net_Retcode, SocketIoMessageType } from 'src/entity/constant';
 import { ClientSocketItem, DebugServerService } from 'src/debug_server/debug_server.service';
 import { ChatServerGateWay } from 'src/chat_server/chat_server.gateway';
+import { ChatLogEntity } from 'src/chat_server/chat_Log.entity';
 
 @Injectable()
 export class DebugClientService extends BaseCrudService<DebugClientEntity> {
@@ -39,6 +40,17 @@ export class DebugClientService extends BaseCrudService<DebugClientEntity> {
   }
   @OnEvent(EventNameType.DebugServerClientResp)
   handleClientData(payload: ClientSocketItem, to_userid: number, msg: string) {
-    this.chat_server.sendMessage(to_userid, SocketIoMessageType.Debug_cmd_req, msg);
+    this.chat_server.sendMessage(payload.guid, to_userid, SocketIoMessageType.Debug_cmd_req, msg);
+  }
+
+  async getAllConnected(): Promise<DebugClientEntity[]> {
+    const guids = [];
+    this.debug_server.clients.forEach((item) => {
+      guids.push(item.guid);
+    });
+    const res = await this.DebugClientRepository.createQueryBuilder(this.table_name)
+      .where(this.table_name + '.guid in (:ids)', { ids: guids })
+      .getMany();
+    return res;
   }
 }

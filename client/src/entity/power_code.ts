@@ -14,6 +14,9 @@ export enum ModuleType {
   Role = "role",
   Power = "power",
   Menu = "menu",
+  Log = "log",
+  Debug = "debug_client",
+  ChatLog = "chat_log",
 }
 export enum PowerCode {
   UserAdd = `${ModuleType.User}:${OperateType.Add}`,
@@ -35,6 +38,11 @@ export enum PowerCode {
   MenuAdd = `${ModuleType.Menu}:${OperateType.Add}`,
   MenuUp = `${ModuleType.Menu}:${OperateType.Up}`,
   MenuQuery = `${ModuleType.Menu}:${OperateType.See}`,
+
+  LogQuery = `${ModuleType.Log}:${OperateType.See}`,
+
+  DebugClientQuery = `${ModuleType.Debug}:${OperateType.See}`,
+  DebugClientUp = `${ModuleType.Debug}:${OperateType.Up}`,
 }
 
 export function getPowerCode(model_name: ModuleType, operate: OperateType | string) {

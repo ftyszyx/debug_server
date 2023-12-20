@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
   ConnectedSocket,
   MessageBody,
@@ -18,6 +19,9 @@ import { AuthService } from 'src/auth/auth.service';
 import { EventNameType, SocketIoMessageType } from 'src/entity/constant';
 import { WebClientReq } from 'src/entity/debug.entity';
 import { UserEntity } from 'src/user/user.entity';
+import { ChatLogEntity } from './chat_Log.entity';
+import { Repository } from 'typeorm';
+import { BaseCrudService } from 'src/utils/base_crud.sevice';
 export const HEART_BEAT_INTERVAL = 3000;
 const LogTagName = 'chatServer';
 const UserIdKey = 'user_id';
@@ -35,13 +39,21 @@ export class ChatServerClient {
 
 @WebSocketGateway({ cors: { origin: '*' } })
 @Injectable()
-export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
+export class ChatServerGateWay
+  extends BaseCrudService<ChatLogEntity>
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
+{
   public clients = new Map<number, ChatServerClient>();
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly myLogger: WinstonLogger,
     private auth: AuthService,
+    @InjectRepository(ChatLogEntity)
+    private readonly chat_log: Repository<ChatLogEntity>,
     private event: EventEmitter2,
-  ) {}
+  ) {
+    super();
+    this.init(chat_log, ChatLogEntity);
+  }
 
   @WebSocketServer()
   server: Server;
@@ -73,7 +85,7 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
     return { event: 'heartbeat', data: 'ok' };
   }
 
-  async sendMessage(userid: number, event_name: string, data: any) {
+  async sendMessage(from: string, userid: number, event_name: string, data: any) {
     const client = this.clients.get(userid);
     if (!client) {
       this.myLogger.log(`client is not found:${userid}`, LogTagName);
@@ -84,16 +96,29 @@ export class ChatServerGateWay implements OnGatewayConnection, OnGatewayDisconne
       return;
     }
     client.socket.emit(event_name, data);
+    const newlog = this.chat_log.create();
+    newlog.from_user = from;
+    newlog.to_users = [userid.toString()];
+    newlog.text = `${data}`;
+    await this.chat_log.save(newlog);
   }
-  async sendDebugResp(userid: number, data: string) {
-    await this.sendMessage(userid, 'debug_cmd', data);
+  async sendDebugResp(from: string, userid: number, data: string) {
+    await this.sendMessage(from, userid, 'debug_cmd', data);
   }
 
   @SubscribeMessage(SocketIoMessageType.Debug_cmd_req)
-  handleDebugMsg(@MessageBody() data: WebClientReq, @ConnectedSocket() socket: Socket): Observable<WsResponse<unknown>> {
+  async handleDebugMsg(
+    @MessageBody() data: WebClientReq,
+    @ConnectedSocket() socket: Socket,
+  ): Promise<Observable<WsResponse<unknown>>> {
     data.from_user_id = socket[UserIdKey];
     this.myLogger.log(`get debugcmd data:${data}`, LogTagName);
     this.event.emit(EventNameType.ChatCmdEvnet, data);
+    const newlog = this.chat_log.create();
+    newlog.from_user = data.from_user_id.toString();
+    newlog.to_users = [data.client_guid];
+    newlog.text = `cmd:${data.cmd} ${data.param}`;
+    await this.chat_log.save(newlog);
     return;
   }
 }

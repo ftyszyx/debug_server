@@ -23,7 +23,7 @@ interface CommonAdminViewProps<EntityT> {
   can_del?: (data: EntityT) => boolean;
   can_edit?: (data: EntityT) => boolean;
   hooks?: AdminViewhookInfo<EntityT>;
-  form_initdata: EntityT;
+  form_initdata?: EntityT;
   form_panel_child_render?: (params: EditPanelChildProps) => JSX.Element;
 }
 export default function CommonAdminView<EntityT extends IdItem>(props: CommonAdminViewProps<EntityT>) {

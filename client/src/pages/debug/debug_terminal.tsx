@@ -1,49 +1,42 @@
-import { useEffect, useState } from "react";
-import { socket } from "@/util/socket";
-import { Button, Space } from "antd";
+import { useRouterStore } from "kl_router";
+// import SideBar from "@/components/Home/SideBar";
 export default function DebugTerminal() {
-  const [isConnect, setIsConnected] = useState(false);
-  const [fooEvents, setFooEvents] = useState([]);
-  useEffect(() => {
-    function onConnect() {
-      console.log("socket connet");
-      setIsConnected(true);
-    }
-    function onDisconnect() {
-      console.log("socket disconnect");
-      setIsConnected(false);
-    }
-
-    function onFooEvent(value) {
-      console.log("event", value);
-      setFooEvents((previous) => [...previous, value]);
-    }
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("foo", onFooEvent);
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("foo", onFooEvent);
-    };
-  }, []);
+  const route_data = useRouterStore();
+  const chat_id = route_data.match?.params["id"];
+  console.log("chat_id", chat_id);
   return (
-    <Space size="middle">
-      <Button
-        onClick={() => {
-          console.log("sockect", socket);
-          socket.connect();
-        }}
-      >
-        连接
-      </Button>
-      <Button
-        onClick={() => {
-          socket.disconnect();
-        }}
-      >
-        断开
-      </Button>
-    </Space>
+    <div className="flex">
+      {/* <SideBar /> */}
+      {/* <div className="flex h-screen flex-grow flex-col items-stretch">
+        {loading ? (
+          <>
+            <div className="border-dark-lighten h-20 border-b"></div>
+            <div className="flex-grow"></div>
+            <InputSection disabled />
+          </>
+        ) : !conversation || error || !conversation.users.includes(currentUser?.uid as string) ? (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-6">
+            <img className="h-32 w-32 object-cover" src="/error.svg" alt="" />
+            <p className="text-center text-lg">Conversation does not exists</p>
+          </div>
+        ) : (
+          <>
+            <ChatHeader conversation={conversation} />
+            <ChatView
+              replyInfo={replyInfo}
+              setReplyInfo={setReplyInfo}
+              inputSectionOffset={inputSectionOffset}
+              conversation={conversation}
+            />
+            <InputSection
+              setInputSectionOffset={setInputSectionOffset}
+              replyInfo={replyInfo}
+              setReplyInfo={setReplyInfo}
+              disabled={false}
+            />
+          </>
+        )}
+      </div> */}
+    </div>
   );
 }
