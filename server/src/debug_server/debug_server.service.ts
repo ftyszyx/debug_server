@@ -16,7 +16,7 @@ export class ClientSocketItem {
   onMessage: (cmd: string, msg: string) => Promise<void>;
   SendMessge: (msg: string) => void;
   adress: string = '';
-  os: string = '';
+  os_name: string = '';
   guid: string = '';
   protocol_address: number = 0;
   constructor(public socket: Socket) {}
@@ -52,9 +52,9 @@ export class DebugServerService {
     const text_arr = Buffer.from(msg, 'utf-8');
     const total_len = HEAD_SIZE + text_arr.length;
     const send_buffer = Buffer.alloc(total_len);
-    send_buffer.writeInt32BE(total_len);
-    send_buffer.writeInt32BE(from_user_id);
-    send_buffer.writeInt32BE(client.protocol_address);
+    send_buffer.writeInt32LE(total_len, 0);
+    send_buffer.writeInt32LE(from_user_id, 4);
+    send_buffer.writeInt32LE(client.protocol_address, 8);
     send_buffer.write(msg, 'utf-8');
     client.socket.write(send_buffer);
   }
@@ -75,15 +75,15 @@ export class DebugServerService {
 
   async handleClientMessage(socket: Socket, msg: Buffer) {
     const id = socket['id'];
-    this.logger.log(`debugserver get id:${id} data:${msg.byteLength}`, LogTag);
+    // this.logger.log(`debugserver get id:${id} data:${msg.byteLength}`, LogTag);
     const len = msg.byteLength;
     if (len <= HEAD_SIZE) return;
-    const package_len = msg.readInt32BE();
-    const package_from = msg.readInt32BE();
-    const to_userid = msg.readInt32BE();
+    const package_len = msg.readInt32LE();
+    const package_from = msg.readInt32LE(4);
+    const to_userid = msg.readInt32LE(8);
     const body = msg.buffer.slice(HEAD_SIZE, len);
     const text = Buffer.from(body).toString();
-    this.logger.log(`${package_len}:${package_from}->${to_userid} text:${text}`, LogTag);
+    this.logger.log(`len:${package_len} from:${package_from} to:${to_userid} text:${text}`, LogTag);
     const client = this.clients.get(id);
     const cmd_end = text.indexOf(' ');
     client.protocol_address = package_from;
@@ -91,6 +91,8 @@ export class DebugServerService {
     if (cmd_end > 0) {
       const cmdtext = text.slice(0, cmd_end).trim();
       const parmas = text.slice(cmd_end).trim();
+
+      this.logger.log(`cmd:${cmdtext} parmas:${parmas}`);
       if (cmdtext == ClientCmdType.SET) {
         const setarr = parmas.split(' ');
         for (let i = 0; i < setarr.length; i++) {

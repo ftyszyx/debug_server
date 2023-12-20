@@ -14,7 +14,7 @@ export class DebugClientEntity {
 
   @Column({ length: 50 })
   @Index('system')
-  system_type: string;
+  os_name: string;
 
   @Column({ length: 255 })
   desc: string;

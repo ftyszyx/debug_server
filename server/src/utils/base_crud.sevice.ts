@@ -123,7 +123,7 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
       throw new HttpException(`id为${id}数据不存在`, Net_Retcode.ERR);
     }
     delete info['id'];
-    const res = this.repository.merge(oldone, info);
+    const res = this.repository.merge(oldone, info as EntityT);
     await this.recv_data_fix([res]);
     const res_item = await this.repository.save(res);
     await this.send_data_fix([res_item]);

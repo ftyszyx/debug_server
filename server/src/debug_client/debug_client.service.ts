@@ -36,7 +36,17 @@ export class DebugClientService extends BaseCrudService<DebugClientEntity> {
 
   @OnEvent(EventNameType.DebugServerClientConnect)
   async handleClientConnect(payload: ClientSocketItem) {
-    await this.getOrAddWithcache({ guid: payload.guid, system_type: payload.os, name: payload.guid }, 'guic', payload.guid);
+    // console.log('get connect', payload);
+    await this.getOrAddWithcache(
+      {
+        guid: payload.guid,
+        os_name: payload.os_name,
+        name: payload.guid,
+        desc: '',
+      },
+      'guid',
+      payload.guid,
+    );
   }
   @OnEvent(EventNameType.DebugServerClientResp)
   handleClientData(payload: ClientSocketItem, to_userid: number, msg: string) {

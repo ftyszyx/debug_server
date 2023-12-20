@@ -31,7 +31,7 @@ export class DebugClientController {
   @ApiBody({
     schema: { type: 'object', properties: { id: { type: 'number' }, data: { $ref: getSchemaPath(DebugClientEntity) } } },
   })
-  async up(@Body() query: UpReq<Pick<DebugClientEntity, 'name'>>) {
-    return await this.debugClientService.updateById(query.id, { name: query.data.name });
+  async up(@Body() query: UpReq<Pick<DebugClientEntity, 'name' | 'desc'>>) {
+    return await this.debugClientService.updateById(query.id, { name: query.data.name, desc: query.data.desc });
   }
 }
