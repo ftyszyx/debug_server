@@ -190,7 +190,9 @@ export function getUserTableCols(parmas: TableColsParams<User>): TableColumnsTyp
       title: "操作",
       key: "control",
       width: 200,
-      render: parmas.operate_render,
+      render: (value) => {
+        return parmas.operate_render(value);
+      },
     },
   ];
 }

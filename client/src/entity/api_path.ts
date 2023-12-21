@@ -52,7 +52,7 @@ export enum PagePath {
   AdminLog = "/system/log",
 
   DebugClients = "/debug/clients",
-  DebugTerminal = "/debug/terminal/:id",
+  DebugTerminal = "/debug/terminal",
   Err404 = "/404",
   Err401 = "/401",
 }

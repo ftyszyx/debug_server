@@ -32,11 +32,11 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async send_data_fix(_data: EntityT[]) {}
+  async send_data_fix(datas: EntityT[]) {}
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async recv_data_fix(_data: EntityT[]) {}
+  async recv_data_fix(datas: EntityT[]) {}
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async after_change(_data: EntityT[]) {}
+  async after_change(datas: EntityT[]) {}
   init(respository: Repository<EntityT>, entity: EntityTarget<EntityT>) {
     this.repository = respository;
     this.entity = entity;

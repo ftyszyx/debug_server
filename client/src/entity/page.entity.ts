@@ -1,4 +1,5 @@
 import { ApiPath } from "./api_path";
+import { History } from "kl_router";
 
 export type Page = {
   pageNum: number;
@@ -50,8 +51,9 @@ export type TableData<T> = T & {
   // serial: number;
 };
 
+type Operate_render_PostFix = (items: JSX.Element[], location: History) => void;
 export interface TableColsParams<EntityT> {
-  operate_render: (data: EntityT) => JSX.Element[];
+  operate_render: (data: EntityT, posfix?: Operate_render_PostFix) => JSX.Element[];
 }
 
 export interface AdminPageUrlInfo {

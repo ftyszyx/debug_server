@@ -15,8 +15,8 @@ dependencies:
     specifier: ^1.4.0
     version: registry.npmmirror.com/axios@1.4.0
   kl_router:
-    specifier: ^1.0.18
-    version: 1.0.18
+    specifier: ^1.0.20
+    version: 1.0.20
   kl_state:
     specifier: ^1.0.3
     version: registry.npmmirror.com/kl_state@1.0.3
@@ -26,6 +26,9 @@ dependencies:
   normalize.css:
     specifier: ^8.0.1
     version: registry.npmmirror.com/normalize.css@8.0.1
+  path-to-regexp:
+    specifier: ^6.2.1
+    version: 6.2.1
   qs:
     specifier: ^6.11.2
     version: registry.npmmirror.com/qs@6.11.2
@@ -361,8 +364,8 @@ packages:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
     dev: false
 
-  /kl_router@1.0.18:
-    resolution: {integrity: sha512-g1jpTD34nj8z31WUsWX8mt4s/HThH7UCJrD4qa9JAAgiYeU1JK6dXjQTYIgmQFeFguHIuV/TfuahVsrJhPmkOg==}
+  /kl_router@1.0.20:
+    resolution: {integrity: sha512-RPx4TjVG09VA1OGT45gGGs5TT8YUgkONVjVd5/M/Oehr/+0ovvf937PmhbRTize6rszgXI1Gy3KzpW/H2b9K7w==}
     dependencies:
       path-to-regexp: 6.2.1
       react: 18.2.0

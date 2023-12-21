@@ -42,7 +42,7 @@ const RootRouter = () => {
           <Route path={PagePath.AdminUser} element={UserAdmin} />
           <Route path={PagePath.AdminLog} element={LogAdmin} />
           <Route path={PagePath.DebugClients} element={DebugClients} />
-          <Route path={PagePath.DebugTerminal} element={DebugTerminal} />
+          <Route path={PagePath.DebugTerminal + "/:id"} element={DebugTerminal} />
           <Route path={PagePath.Err404} element={NoPower} />
           <Route path={PagePath.Err401} element={NotFound} />
         </Route>

@@ -11,7 +11,7 @@ export interface Menu {
   title: string; // 标题
   icon_style_type: string; // 图标
   url: string; // 链接路径
-  parent: number; // 父级ID
+  parent: string; // 父级ID
   desc: string; // 描述
   sorts: number; // 排序编号
   status: Status; // 状态，1启用，0禁用
@@ -95,6 +95,6 @@ export function getMenuTableCols(parmas: TableColsParams<Menu>): TableColumnsTyp
     { title: "标题", dataIndex: "title", key: "title" },
     { title: "描述", dataIndex: "desc", key: "desc" },
     { title: "状态", dataIndex: "status", key: "status", render: renderStatusTable },
-    { title: "操作", key: "control", width: 200, render: parmas.operate_render },
+    { title: "操作", key: "control", width: 200, render: (value) => parmas.operate_render(value) },
   ];
 }

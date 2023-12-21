@@ -1,7 +1,8 @@
 import { FieldInfo } from "./form.entity";
-import { Input, TableColumnsType } from "antd";
+import { Button, Input, TableColumnsType } from "antd";
 import { OperateCode_All, OperateCode_View, TableColsParams } from "./page.entity";
 import TextArea from "antd/es/input/TextArea";
+import { PagePath } from "./api_path";
 
 export interface DebugClient {
   id: number; // ID,添加时可以不传id
@@ -9,7 +10,8 @@ export interface DebugClient {
   guid: string; // guid
   desc: string;
   os_name: string;
-  adress: string;
+  address: string;
+  connected: boolean;
 }
 
 export const getDebugClientsFormConfig = (): FieldInfo[] => {
@@ -68,12 +70,33 @@ export function getDebugClientsTalbeCols(parmas: TableColsParams<DebugClient>): 
     { title: "guid唯一编码", dataIndex: "guid", key: "guid" },
     { title: "系统类型", dataIndex: "os_name", key: "os_name" },
     { title: "ip地址", dataIndex: "address", key: "address" },
+    {
+      title: "在线",
+      dataIndex: "connected",
+      key: "connected",
+      render: (value: boolean) => {
+        return value ? <span className=" text-blue-600">在线</span> : <span className=" text-gray-500">失联</span>;
+      },
+    },
     { title: "描述", dataIndex: "desc", key: "desc" },
     {
       title: "操作",
       key: "control",
       width: 200,
-      render: parmas.operate_render,
+      render: (value: DebugClient) => {
+        return parmas.operate_render(value, (controls, location) => {
+          controls.push(
+            <Button
+              key="10"
+              onClick={() => {
+                location.push(`${PagePath.DebugTerminal}/${value.id}`);
+              }}
+            >
+              CMD
+            </Button>
+          );
+        });
+      },
     },
   ];
 }

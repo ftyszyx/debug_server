@@ -8,6 +8,7 @@ import { DeleteOutlined, EyeOutlined, PlusCircleOutlined, ToolOutlined } from "@
 import SearchBar from "./search_bar";
 import { SorterResult } from "antd/es/table/interface";
 import CommonEditPanel, { EditPanelChildProps } from "./common_edit_panel";
+import { useHistory } from "kl_router";
 
 interface AdminViewhookInfo<EntityT> {
   after_getdata?: (datalist: EntityT[]) => Promise<void>;
@@ -27,7 +28,7 @@ interface CommonAdminViewProps<EntityT> {
   form_panel_child_render?: (params: EditPanelChildProps) => JSX.Element;
 }
 export default function CommonAdminView<EntityT extends IdItem>(props: CommonAdminViewProps<EntityT>) {
-  // console.log("render commonadminview", props.api_urls);
+  const location = useHistory();
   const [dataList, setDataList] = useState<EntityT[]>([]);
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
   const [sortinfo, setSortinfo] = useState<OrderByList>({});
@@ -145,7 +146,7 @@ export default function CommonAdminView<EntityT extends IdItem>(props: CommonAdm
 
   const talble_cols = useMemo(() => {
     return props.get_table_cols({
-      operate_render: (data) => {
+      operate_render: (data, posfix) => {
         const controls = [];
         if (props.api_urls.getlist) {
           controls.push(
@@ -175,6 +176,9 @@ export default function CommonAdminView<EntityT extends IdItem>(props: CommonAdm
             </Popconfirm>
           );
 
+        if (posfix) {
+          posfix(controls, location);
+        }
         const result: JSX.Element[] = [];
         controls.forEach((item, index) => {
           if (index) {
@@ -190,18 +194,20 @@ export default function CommonAdminView<EntityT extends IdItem>(props: CommonAdm
     <div>
       {/*operate type*/}
       <div className="flex flex-col   my-1">
-        <ul className="flex">
-          <li>
-            <Button
-              type="primary"
-              icon={<PlusCircleOutlined />}
-              disabled={!props.api_urls.add}
-              onClick={() => ShowEditPanel(undefined, OperateType.Add)}
-            >
-              添加
-            </Button>
-          </li>
-        </ul>
+        {props.api_urls.add && (
+          <ul className="flex">
+            <li>
+              <Button
+                type="primary"
+                icon={<PlusCircleOutlined />}
+                disabled={!props.api_urls.add}
+                onClick={() => ShowEditPanel(undefined, OperateType.Add)}
+              >
+                添加
+              </Button>
+            </li>
+          </ul>
+        )}
         {/* <Divider type="vertical" /> */}
         {props.show_search && (
           <SearchBar

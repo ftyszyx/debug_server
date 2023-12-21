@@ -2,17 +2,18 @@ import { Status } from "@/config";
 import { Power } from "@/entity/power.entity";
 import { getMoudleLabel } from "@/entity/power_code";
 
-type TreeSrcType = { id: number; title: string; status: Status; parent?: number };
-export type TreeNodeType<T> = {
-  id: number;
-  key: string;
-  title: string;
-  children?: TreeNodeType<T>[];
-  parent?: string;
-  show?: boolean;
-  fake?: boolean;
-  status: Status;
-} & T;
+type TreeSrcType = { id: number; title: string; status: Status; parent?: string };
+export type TreeNodeType<T> =
+  | {
+      id: number;
+      key: string;
+      title: string;
+      children?: TreeNodeType<T>[];
+      parent?: string;
+      show?: boolean;
+      fake?: boolean;
+      status: Status;
+    } & T;
 export interface MyTreeInfo<EntityT> {
   trees: TreeNodeType<EntityT>[];
   datalist: TreeNodeType<EntityT>[];

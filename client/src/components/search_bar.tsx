@@ -159,7 +159,7 @@ export default function SearchBar(props: SearchBarProps) {
                     add();
                   }}
                 >
-                  添加
+                  添加搜索条件
                 </Button>
               </Space>
             );

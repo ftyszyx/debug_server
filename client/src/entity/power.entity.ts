@@ -100,6 +100,11 @@ export function getPowerTableCols(parmas: TableColsParams<Power>): TableColumnsT
     { title: "描述", dataIndex: "desc", key: "desc" },
     { title: "代码", dataIndex: "code", key: "code" },
     { title: "状态", dataIndex: "status", key: "status", render: renderStatusTable },
-    { title: "操作", key: "control", width: 200, render: parmas.operate_render },
+    {
+      title: "操作",
+      key: "control",
+      width: 200,
+      render: (value) => parmas.operate_render(value),
+    },
   ];
 }

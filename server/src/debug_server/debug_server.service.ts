@@ -15,7 +15,7 @@ const LogTag = 'debugServer';
 export class ClientSocketItem {
   onMessage: (cmd: string, msg: string) => Promise<void>;
   SendMessge: (msg: string) => void;
-  adress: string = '';
+  ip: string = '';
   os_name: string = '';
   guid: string = '';
   protocol_address: number = 0;

@@ -12,6 +12,8 @@ export enum Status {
   Enable = 1,
   Disable = 0,
 }
+
+export const MenuParamNull = "null";
 export const Debug = false;
 export const MOCK_TOKEN = "dddddddssff";
 export const TOKEN_KEY = "Authorizaion";
