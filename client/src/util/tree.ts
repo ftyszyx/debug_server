@@ -34,7 +34,7 @@ export const GetCommonTree = <T extends TreeSrcType>(src_items: T[]): MyTreeInfo
       // console.log("add tree node");
       const node_item = Object.assign({ key: item.id.toString() }, { ...item }) as TreeNodeType<T>;
       if (datamap.has(node_item.key.toString())) return datamap.get(node_item.key.toString())!;
-      if (item.parent && item.parent != 0) {
+      if (item.parent && item.parent != "0") {
         const parent_node = addTreeNode(menu_map.get(item.parent.toString())!);
         if (parent_node.children) {
           parent_node.children.push(node_item);

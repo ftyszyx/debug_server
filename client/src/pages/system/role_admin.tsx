@@ -5,12 +5,11 @@ import { SUPER_POWER_ROLE, Status } from "@/config";
 import { AdminPageUrlInfo } from "@/entity/page.entity";
 import { ApiPath } from "@/entity/api_path";
 import CommonAdminView from "@/components/common_admin_view";
-import { MenuStore, PowerStore, RoleStore, UseMenuStore, UseUserStore, usePowerStore, useRoleStore } from "@/models";
+import { MenuStore, PowerStore, UseMenuStore, UseUserStore, usePowerStore } from "@/models";
 import { Role, getRoleFormConfig, getRoleTalbeCols } from "@/entity/role.entity";
 import { GetCommonTree, GetPowerTree } from "@/util/tree";
 import { GetTableData } from "@/util/table";
 function RoleAdmin() {
-  console.log("render roleAdmin");
   const userstore = UseUserStore() as UserStore;
   // const role_store = useRoleStore() as RoleStore;
   const menu_store = UseMenuStore() as MenuStore;

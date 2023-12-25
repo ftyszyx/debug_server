@@ -19,9 +19,9 @@ export class MenuEntity {
   @ApiProperty()
   url: string;
 
-  @Column('int')
+  @Column({ length: 255 })
   @ApiProperty()
-  parent: number;
+  parent: string;
 
   @Column('text')
   @ApiProperty()

@@ -4,6 +4,8 @@ import { useHistory } from "kl_router";
 import { Breadcrumb } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import { Menu } from "@/entity/menu.entity";
+import { pathToRegexp } from "path-to-regexp";
+import { BreadcrumbItemType } from "antd/es/breadcrumb/Breadcrumb";
 
 interface Props {
   menus: Menu[];
@@ -14,21 +16,24 @@ export default function BreadCom(props: Props): JSX.Element {
   /** 根据当前location动态生成对应的面包屑 **/
   const breads = useMemo(() => {
     const now_url = location.PathName;
-    // console.log("path:", now_url);
-    const breads = [];
-    let target_menu = props.menus.find((x) => x.url == now_url);
-    if (target_menu) {
-      breads.push({ title: target_menu.title });
-      while (target_menu.parent != null && target_menu.parent != undefined) {
-        target_menu = props.menus.find((x) => x.id == target_menu?.parent);
-        if (target_menu == null) {
-          break;
+    const breads: BreadcrumbItemType[] = [];
+    for (let i = 0; i < props.menus.length; i++) {
+      let menuinfo = props.menus[i];
+      const regs = pathToRegexp(menuinfo.url, [], { end: true, start: true });
+      if (regs.test(now_url)) {
+        breads.push({ title: menuinfo.title });
+        while (menuinfo.parent != null && menuinfo.parent != "0") {
+          const new_menun = props.menus.find((x) => x.id.toString() == menuinfo?.parent);
+          if (new_menun == null) {
+            break;
+          }
+          breads.push({ title: new_menun.title });
+          menuinfo = new_menun;
         }
-        breads.push({ title: target_menu.title });
+        breads.reverse();
+        break;
       }
     }
-    breads.reverse();
-    // console.log("breads:", breads);
     return breads;
   }, [location.PathName, props.menus]);
 

@@ -68,11 +68,9 @@ function MenuAdmin() {
         return getMenuTableCols(params);
       }}
       form_fields={FieldConfigList}
-      form_initdata={{ status: Status.Enable, desc: "", parent: 0, sorts: 1 } as Menu}
+      form_initdata={{ status: Status.Enable, desc: "", parent: "0", sorts: 1 } as Menu}
       hooks={{
-        async after_getdata(datalist) {
-          await menu_store.setItems(datalist);
-        },
+        async after_getdata() {},
         before_editpanel_show(op_type, data) {
           if (op_type == OperateCode.Add) {
             SetSelectRoles([]);

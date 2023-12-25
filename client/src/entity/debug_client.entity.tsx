@@ -89,7 +89,9 @@ export function getDebugClientsTalbeCols(parmas: TableColsParams<DebugClient>): 
             <Button
               key="10"
               onClick={() => {
-                location.push(`${PagePath.DebugTerminal}/${value.id}`);
+                const new_url = `${PagePath.DebugTerminal}/${value.id}`;
+                console.log("new url", new_url);
+                location.push(new_url);
               }}
             >
               CMD

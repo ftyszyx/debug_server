@@ -27,7 +27,7 @@ export default function MenuCom(props: Props): JSX.Element {
       const menuinfo = menutree_info.datalist[i];
       const regs = pathToRegexp(menuinfo.url, [], { end: true, start: true });
       if (regs.test(location.PathName)) {
-        console.log(` get match:${menuinfo.url}`);
+        // console.log(` get match:${menuinfo.url}`);
         setChosedKey([menuinfo.id.toString()]);
         let new_opens = [menuinfo.id.toString()];
         let cur_menu = menuinfo;
@@ -42,8 +42,7 @@ export default function MenuCom(props: Props): JSX.Element {
         break;
       }
     }
-    console.log("chosekeys:", chosedKey, "openkeys:", openKeys, "location", location);
-  }, [location]);
+  }, [location.PathName]);
 
   const menutree_info = useMemo(() => {
     const menulist = cloneDeep(props.data as MenuNodeType[]);
@@ -54,13 +53,11 @@ export default function MenuCom(props: Props): JSX.Element {
   }, [props.data]);
   /** 处理原始数据，将原始数据处理为层级关系 **/
   const treeDom: ItemType[] = useMemo(() => {
-    // console.log("treeinfo", menutree_info);
     menutree_info.datalist.forEach((item) => {
-      item.parent = `${item.parent}`;
       item.icon = <Icon type={item.icon_style_type}></Icon>;
       item.label = item.title;
+      // console.log("menuitem", item);
     });
-    // console.log("menu list", menutree_info.trees);
     return menutree_info.trees;
   }, [menutree_info]);
 
@@ -84,6 +81,7 @@ export default function MenuCom(props: Props): JSX.Element {
           if (menuinfo) {
             const params_keys: Key[] = [];
             pathToRegexp(menuinfo.url, params_keys);
+            // console.log("slect parmskeys", params_keys);
             if (params_keys.length == 0) {
               location.push(menuinfo.url);
             } else {
