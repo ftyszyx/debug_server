@@ -38,6 +38,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: registry.npmmirror.com/react-dom@18.2.0(react@18.2.0)
+  react-infinite-scroll-component:
+    specifier: ^6.1.0
+    version: 6.1.0(react@18.2.0)
   react-use:
     specifier: ^17.4.0
     version: registry.npmmirror.com/react-use@17.4.0(react-dom@18.2.0)(react@18.2.0)
@@ -429,6 +432,15 @@ packages:
       scheduler: 0.23.0
     dev: false
 
+  /react-infinite-scroll-component@6.1.0(react@18.2.0):
+    resolution: {integrity: sha512-SQu5nCqy8DxQWpnUVLx7V7b7LcA37aM7tvoWjTLZp1dk6EJibM5/4EJKzOnl07/BsM1Y40sKLuqjCwwH/xV0TQ==}
+    peerDependencies:
+      react: '>=16.0.0'
+    dependencies:
+      react: registry.npmmirror.com/react@18.2.0
+      throttle-debounce: 2.3.0
+    dev: false
+
   /react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
@@ -448,6 +460,16 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /throttle-debounce@2.3.0:
+    resolution: {integrity: sha512-H7oLPV0P7+jgvrk+6mwwwBDmxTaxnu9HMXmloNLXwnNO0ZxZ31Orah2n8lU1eMPvsaowP2CX+USCgyovXfdOFQ==}
+    engines: {node: '>=8'}
+    dev: false
+
+  /throttle-debounce@5.0.0:
+    resolution: {integrity: sha512-2iQTSgkkc1Zyk0MeVrt/3BvuOXYPl/R8Z0U2xxo9rjwNciaHDG3R+Lm6dh4EeUci49DanvBnuqI6jshoQQRGEg==}
+    engines: {node: '>=12.22'}
+    dev: false
 
   registry.npmmirror.com/@aashutoshrathi/word-wrap@1.2.6:
     resolution: {integrity: sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==, registry: https://registry.npmjs.org/, tarball: https://registry.npmmirror.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz}
@@ -539,7 +561,7 @@ packages:
       json2mq: registry.npmmirror.com/json2mq@0.2.0
       react: registry.npmmirror.com/react@18.2.0
       resize-observer-polyfill: registry.npmmirror.com/resize-observer-polyfill@1.5.1
-      throttle-debounce: registry.npmmirror.com/throttle-debounce@5.0.0
+      throttle-debounce: 5.0.0
     dev: false
 
   registry.npmmirror.com/@babel/code-frame@7.22.10:
