@@ -10,10 +10,27 @@ Target Server Type    : MYSQL
 Target Server Version : 50710
 File Encoding         : 65001
 
-Date: 2023-12-18 18:18:23
+Date: 2023-12-25 14:14:02
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for chat_log
+-- ----------------------------
+DROP TABLE IF EXISTS `chat_log`;
+CREATE TABLE `chat_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `text` text NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `from_user` varchar(255) NOT NULL,
+  `to_users` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of chat_log
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for debug_client
@@ -23,16 +40,17 @@ CREATE TABLE `debug_client` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `guid` varchar(255) NOT NULL,
-  `system_type` varchar(50) NOT NULL,
+  `os_name` varchar(50) NOT NULL,
   `desc` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `guid` (`guid`),
-  KEY `system` (`system_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  KEY `system` (`os_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of debug_client
 -- ----------------------------
+INSERT INTO `debug_client` VALUES ('3', '张雨鑫编辑器', 'fc98f7deeb5763e8d7023dace124649cc0ca20fe', 'android', 'test');
 
 -- ----------------------------
 -- Table structure for log
@@ -59,27 +77,29 @@ CREATE TABLE `log` (
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
-  `parent` int(11) NOT NULL,
   `sorts` tinyint(4) NOT NULL,
   `status` tinyint(4) NOT NULL,
   `desc` text CHARACTER SET utf8mb4 NOT NULL,
   `title` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
   `icon_style_type` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+  `parent` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of menu
 -- ----------------------------
-INSERT INTO `menu` VALUES ('1', '/home', '0', '0', '1', '首页', '首页', 'icon-home');
-INSERT INTO `menu` VALUES ('2', '/system', '0', '1', '1', '系统管理', '系统管理', 'icon-setting');
-INSERT INTO `menu` VALUES ('3', '/system/useradmin', '2', '0', '1', '系统管理/用户管理', '用户管理', 'icon-user');
-INSERT INTO `menu` VALUES ('4', '/system/roleadmin', '2', '1', '1', '系统管理/角色管理', '角色管理', 'icon-team');
-INSERT INTO `menu` VALUES ('5', '/system/poweradmin', '2', '2', '1', '系统管理/权限管理', '权限管理', 'icon-safe');
-INSERT INTO `menu` VALUES ('6', '/system/menuadmin', '2', '3', '1', '系统管理/菜单管理', '菜单管理', 'icon-menu');
-INSERT INTO `menu` VALUES ('8', '/debug', '0', '1', '1', '调试工具', '调试工具', '');
-INSERT INTO `menu` VALUES ('9', '/debug/chat', '8', '1', '1', '调试工具/命令窗口', '命令窗口', '');
+INSERT INTO `menu` VALUES ('1', '0', '1', '首页', '首页', 'icon-home', '0', '/home');
+INSERT INTO `menu` VALUES ('2', '1', '1', '系统管理', '系统管理', 'icon-setting', '0', '/system');
+INSERT INTO `menu` VALUES ('3', '0', '1', '系统管理/用户管理', '用户管理', 'icon-user', '2', '/system/useradmin');
+INSERT INTO `menu` VALUES ('4', '1', '1', '系统管理/角色管理', '角色管理', 'icon-team', '2', '/system/roleadmin');
+INSERT INTO `menu` VALUES ('5', '2', '1', '系统管理/权限管理', '权限管理', 'icon-safe', '2', '/system/poweradmin');
+INSERT INTO `menu` VALUES ('6', '3', '1', '系统管理/菜单管理', '菜单管理', 'icon-menu', '2', '/system/menuadmin');
+INSERT INTO `menu` VALUES ('7', '4', '1', '系统管理/日志', '日志', 'icon-logs', '2', '/system/log');
+INSERT INTO `menu` VALUES ('21', '1', '1', '调试工具', '调试工具', 'icon-debug', '0', '/debug');
+INSERT INTO `menu` VALUES ('22', '2', '1', '调试工具/命令窗口', '命令窗口', 'icon-terminal', '21', '/debug/terminal/:id');
+INSERT INTO `menu` VALUES ('23', '1', '1', '调试工具/所有连接', '所有连接', 'icon-clients', '21', '/debug/clients');
 
 -- ----------------------------
 -- Table structure for power

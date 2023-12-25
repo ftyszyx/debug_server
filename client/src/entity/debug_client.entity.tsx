@@ -85,18 +85,21 @@ export function getDebugClientsTalbeCols(parmas: TableColsParams<DebugClient>): 
       width: 200,
       render: (value: DebugClient) => {
         return parmas.operate_render(value, (controls, location) => {
-          controls.push(
-            <Button
-              key="10"
-              onClick={() => {
-                const new_url = `${PagePath.DebugTerminal}/${value.id}`;
-                console.log("new url", new_url);
-                location.push(new_url);
-              }}
-            >
-              CMD
-            </Button>
-          );
+          if (value.connected) {
+            controls.push(
+              <Button
+                key="10"
+                type="primary"
+                onClick={() => {
+                  const new_url = `${PagePath.DebugTerminal}/${value.id}`;
+                  console.log("new url", new_url);
+                  location.push(new_url);
+                }}
+              >
+                CMD
+              </Button>
+            );
+          }
         });
       },
     },

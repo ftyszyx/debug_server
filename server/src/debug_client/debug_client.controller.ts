@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { DebugClientService } from './debug_client.service';
 import { ApiBearerAuth, ApiBody, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ListReq, ListReqSwagger, UpReq } from 'src/entity/api.entity';
@@ -19,9 +19,8 @@ export class DebugClientController {
     return await this.debugClientService.getList(req_params);
   }
 
-  @Post('getAllValid')
+  @Get('getAllValid')
   @PowerCode({ module: ModuleType.Debug_client, code: PowerCodeType.See })
-  @ApiBody({ type: ListReqSwagger })
   async getAllvalid() {
     return await this.debugClientService.getAllConnected();
   }

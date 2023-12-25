@@ -3,7 +3,7 @@ import { create } from "kl_state";
 
 export interface TerminalInfo {
   client: DebugClient;
-  create_time: string;
+  create_time: Date;
 }
 
 export interface TerminalStoreType {

@@ -57,6 +57,7 @@ export class DebugClientService extends BaseCrudService<DebugClientEntity> {
     this.debug_server.clients.forEach((item) => {
       guids.push(item.guid);
     });
+    if (guids.length <= 0) return [];
     const res = await this.DebugClientRepository.createQueryBuilder(this.table_name)
       .where(this.table_name + '.guid in (:ids)', { ids: guids })
       .getMany();

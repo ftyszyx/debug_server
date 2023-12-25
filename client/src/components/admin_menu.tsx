@@ -21,29 +21,6 @@ export default function MenuCom(props: Props): JSX.Element {
   const [chosedKey, setChosedKey] = useState<string[]>([]); // 当前选中
   const [openKeys, setOpenKeys] = useState<string[]>([]); // 当前需要被展开的项
 
-  // 当页面路由跳转时，即location发生改变，则更新选中项
-  useEffect(() => {
-    for (let i = 0; i < menutree_info.datalist.length; i++) {
-      const menuinfo = menutree_info.datalist[i];
-      const regs = pathToRegexp(menuinfo.url, [], { end: true, start: true });
-      if (regs.test(location.PathName)) {
-        // console.log(` get match:${menuinfo.url}`);
-        setChosedKey([menuinfo.id.toString()]);
-        let new_opens = [menuinfo.id.toString()];
-        let cur_menu = menuinfo;
-        while (cur_menu.parent && cur_menu.parent != "0") {
-          const parent_id = cur_menu.parent;
-          new_opens.push(parent_id);
-          const tmp = menutree_info.datamap.get(parent_id);
-          if (tmp == null) break;
-          cur_menu = tmp;
-        }
-        setOpenKeys(new_opens);
-        break;
-      }
-    }
-  }, [location.PathName]);
-
   const menutree_info = useMemo(() => {
     const menulist = cloneDeep(props.data as MenuNodeType[]);
     menulist.sort((a, b) => {
@@ -60,6 +37,28 @@ export default function MenuCom(props: Props): JSX.Element {
     });
     return menutree_info.trees;
   }, [menutree_info]);
+
+  // 当页面路由跳转时，即location发生改变，则更新选中项
+  useEffect(() => {
+    for (let i = 0; i < menutree_info.datalist.length; i++) {
+      const menuinfo = menutree_info.datalist[i];
+      const regs = pathToRegexp(menuinfo.url, [], { end: true, start: true });
+      if (regs.test(location.PathName)) {
+        setChosedKey([menuinfo.id.toString()]);
+        let new_opens = [menuinfo.id.toString()];
+        let cur_menu = menuinfo;
+        while (cur_menu.parent && cur_menu.parent != "0") {
+          const parent_id = cur_menu.parent;
+          new_opens.push(parent_id);
+          const tmp = menutree_info.datamap.get(parent_id);
+          if (tmp == null) break;
+          cur_menu = tmp;
+        }
+        setOpenKeys(new_opens);
+        break;
+      }
+    }
+  }, [location.PathName, menutree_info]);
 
   return (
     <Sider width={256} className="sider" trigger={null} collapsible collapsed={props.collapsed}>
