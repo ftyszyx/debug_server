@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50710
 File Encoding         : 65001
 
-Date: 2023-12-25 14:14:02
+Date: 2023-12-26 18:40:53
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,9 +23,12 @@ CREATE TABLE `chat_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `text` text NOT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `from_user` varchar(255) NOT NULL,
+  `from_user` varchar(255) NOT NULL DEFAULT '',
   `to_users` text NOT NULL,
-  PRIMARY KEY (`id`)
+  `to_user` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `from_user` (`from_user`),
+  KEY `to_user` (`to_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -96,7 +99,7 @@ INSERT INTO `menu` VALUES ('3', '0', '1', '系统管理/用户管理', '用户�
 INSERT INTO `menu` VALUES ('4', '1', '1', '系统管理/角色管理', '角色管理', 'icon-team', '2', '/system/roleadmin');
 INSERT INTO `menu` VALUES ('5', '2', '1', '系统管理/权限管理', '权限管理', 'icon-safe', '2', '/system/poweradmin');
 INSERT INTO `menu` VALUES ('6', '3', '1', '系统管理/菜单管理', '菜单管理', 'icon-menu', '2', '/system/menuadmin');
-INSERT INTO `menu` VALUES ('7', '4', '1', '系统管理/日志', '日志', 'icon-logs', '2', '/system/log');
+INSERT INTO `menu` VALUES ('7', '4', '1', '系统管理/日志', '系统日志', 'icon-logs', '2', '/system/log');
 INSERT INTO `menu` VALUES ('21', '1', '1', '调试工具', '调试工具', 'icon-debug', '0', '/debug');
 INSERT INTO `menu` VALUES ('22', '2', '1', '调试工具/命令窗口', '命令窗口', 'icon-terminal', '21', '/debug/terminal/:id');
 INSERT INTO `menu` VALUES ('23', '1', '1', '调试工具/所有连接', '所有连接', 'icon-clients', '21', '/debug/clients');
