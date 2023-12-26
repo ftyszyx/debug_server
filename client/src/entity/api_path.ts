@@ -40,6 +40,9 @@ export enum ApiPath {
   upDebugClient = "/api/debug_client/up",
   //log
   getLogList = "/api/my_log/getList",
+  //chatlog
+  getchatLogList = "/api/chat_server/getList",
+  getChatLogMore = "/api/chat_server/getChatLogMore",
 }
 
 export enum PagePath {

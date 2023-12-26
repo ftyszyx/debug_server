@@ -1,5 +1,6 @@
 import { Status } from "@/config";
 import { OrderByReq, SearchFormDef } from "./form.entity";
+import { ChatLog } from "./chat_log.entity";
 
 export interface IdItem {
   id: number;
@@ -64,4 +65,15 @@ export class UpRoleMenuReq {
 export interface UpReq<T> {
   id: number;
   data: T;
+}
+export interface ChatLogMoreReq {
+  start_time: string;
+  end_time: string;
+  num: number;
+  guid: string;
+}
+
+export interface ChatLogMoreResp {
+  logs: ChatLog[];
+  total: number;
 }

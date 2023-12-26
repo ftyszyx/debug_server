@@ -128,9 +128,6 @@ export default function SearchBar(props: SearchBarProps) {
                             const opkey = ["items", field.name, "op"];
                             const oldvalue = form.getFieldValue(fieldkey);
                             const oldop = form.getFieldValue(opkey);
-                            // const oldvalue1 = form.getFieldValue(["items", field.name]);
-                            // console.log("reset1", oldvalue1);
-                            // console.log("reset2", oldvalue);
                             if (oldvalue) {
                               form.setFieldValue(fieldkey, undefined);
                             }

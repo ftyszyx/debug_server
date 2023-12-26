@@ -23,3 +23,5 @@ export const AUTHOR_WEB = "www.baidu.com";
 export const SystemName = "系统";
 export const Guest_username = "guest";
 export const Guest_password = "123456";
+
+export const SocketIO_Debug_cmd = "debug_cmd";

@@ -22,6 +22,7 @@ import { UserEntity } from 'src/user/user.entity';
 import { ChatLogEntity } from './chat_Log.entity';
 import { Repository } from 'typeorm';
 import { BaseCrudService } from 'src/utils/base_crud.sevice';
+import { ChatLogMoreReq, ChatLogMoreResp } from 'src/entity/api.entity';
 export const HEART_BEAT_INTERVAL = 3000;
 const LogTagName = 'chatServer';
 const UserIdKey = 'user_id';
@@ -98,7 +99,8 @@ export class ChatServerGateWay
     client.socket.emit(event_name, data);
     const newlog = this.chat_log.create();
     newlog.from_user = from;
-    newlog.to_users = [userid.toString()];
+    newlog.to_users = [];
+    newlog.to_user = userid.toString();
     newlog.text = `${data}`;
     await this.chat_log.save(newlog);
   }
@@ -116,9 +118,45 @@ export class ChatServerGateWay
     this.event.emit(EventNameType.ChatCmdEvnet, data);
     const newlog = this.chat_log.create();
     newlog.from_user = data.from_user_id.toString();
-    newlog.to_users = [data.client_guid];
+    newlog.to_users = [];
+    newlog.to_user = data.client_guid;
     newlog.text = `cmd:${data.cmd} ${data.param}`;
     await this.chat_log.save(newlog);
     return;
+  }
+
+  async getChatLogMore(req: ChatLogMoreReq, user: UserEntity) {
+    let qb = await this.chat_log.createQueryBuilder(this.table_name);
+    const res: ChatLogMoreResp = { logs: [], total: 0 };
+    res.total = await qb.getCount();
+    qb.where('chat_log.from_user= :id1', { id1: user.id.toString() }).andWhere('chat_log.to_user=:id2', { id2: req.guid });
+    if (req.start_time != '') {
+      qb.andWhere('chat_log.create_time >:time', { time: req.start_time });
+    }
+    if (req.end_time != '') {
+      qb.andWhere('chat_log.create_time <:time', { time: req.end_time });
+    }
+    qb.orderBy('chat_log.create_time', 'DESC');
+    qb.limit(req.num);
+    res.logs = await qb.getMany();
+
+    const remain_num = req.num - res.logs.length;
+    if (remain_num > 0) {
+      qb = await this.chat_log.createQueryBuilder(this.table_name);
+      qb.where('chat_log.to_user= :id1', { id1: user.id.toString() }).andWhere('chat_log.from_user=:id2', { id2: req.guid });
+      if (req.start_time != '') {
+        qb.andWhere('chat_log.create_time >:time', { time: req.start_time });
+      }
+      if (req.end_time != '') {
+        qb.andWhere('chat_log.create_time <:time', { time: req.end_time });
+      }
+      qb.orderBy('chat_log.create_time', 'DESC');
+      qb.limit(remain_num);
+      const res2 = await qb.getMany();
+      res2.forEach((item) => {
+        res.logs.push(item);
+      });
+    }
+    return res;
   }
 }

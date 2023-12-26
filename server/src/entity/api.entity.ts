@@ -1,5 +1,6 @@
 import { ApiProperty, IntersectionType } from '@nestjs/swagger';
 import { OrderByReq, OrderBySwaggerDef, SearchFormDef, WhereSwaggerDef } from './sql.entity';
+import { ChatLogEntity } from 'src/chat_server/chat_Log.entity';
 
 export interface ListResp<T> {
   list: T[];
@@ -65,4 +66,15 @@ export class ListReqSwagger extends IntersectionType(PageReq, WhereSwaggerDef, O
 export interface TokenPayload {
   user_name: string;
   id: number;
+}
+export interface ChatLogMoreReq {
+  start_time: string;
+  end_time: string;
+  num: number;
+  guid: string;
+}
+
+export interface ChatLogMoreResp {
+  logs: ChatLogEntity[];
+  total: number;
 }

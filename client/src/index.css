@@ -11,3 +11,9 @@ ul {
 .bg-dark {
   background-color: rgb(36, 37, 38);
 }
+
+.border-dark-lighten {
+  border-style: solid;
+  --tw-border-opacity: 1;
+  border-color: rgb(58 59 60 / var(--tw-border-opacity));
+}
