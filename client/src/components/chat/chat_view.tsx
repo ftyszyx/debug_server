@@ -1,11 +1,8 @@
 import { ListReq, ListResp, PageReq } from "@/entity/api.entity";
-import { ApiPath } from "@/entity/api_path";
-import { ChatLog } from "@/entity/chat_log.entity";
 import { DebugClient } from "@/entity/debug_client.entity";
 import { UserStore } from "@/entity/user.entity";
 import { ChatLogStoreType, UseUserStore, useChatStore } from "@/models";
-import { MyFetchPost } from "@/util/fetch";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ChatMessage from "./chat_message";
 
@@ -33,19 +30,20 @@ export default function ChatView(props: ChatViewProps) {
       dataLength={curLogInfo?.total || 0}
       next={() => {
         if (props.client) {
-          chatLogStore.getMore(props.client?.guid);
+          chatLogStore.getMore(props.client?.guid, false);
         }
       }}
       inverse
-      hasMore={chatDatas.length < total}
+      hasMore={curLogInfo ? curLogInfo.logs.length < curLogInfo.total : false}
       loader={<div className="flex justify-center py-3">loading..</div>}
       style={{ display: "flex", flexDirection: "column-reverse" }}
       height={`calc(100vh - ${100 + props.inputOffset}px)`}
     >
       <div className="flex flex-col items-stretch gap-3 pt-10 pb-1">
-        {chatDatas.map((item) => {
-          return <ChatMessage message={item} leftOrRight={item.from_user == userstore.user_base?.id.toString()}></ChatMessage>;
-        })}
+        {curLogInfo &&
+          curLogInfo.logs.map((item) => {
+            return <ChatMessage message={item} leftOrRight={item.from_user == userstore.user_base?.id.toString()}></ChatMessage>;
+          })}
         <div ref={scrollBottomRef}></div>
       </div>
     </InfiniteScroll>

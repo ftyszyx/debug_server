@@ -14,7 +14,7 @@ export interface ChatConverSationType {
 export interface ChatLogStoreType {
   conversations: ChatConverSationType[];
   conversation_map: Map<string, ChatConverSationType>;
-  getMore: (guid: string, forece_new: boolean) => Promise<void>;
+  getMore: (guid: string, forece_new?: boolean) => Promise<void>;
   getLogsByGuid: (guid: string) => ChatConverSationType;
   addMessage: (guid: string, log: ChatLog) => void;
 }
