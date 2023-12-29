@@ -20,6 +20,7 @@ export default function DebugTerminal() {
   }, []);
   useEffect(() => {
     setLoading(true);
+    console.log("connect socket");
     function onConnect() {
       console.log("socket connet");
       setIsConnected(true);
@@ -31,7 +32,7 @@ export default function DebugTerminal() {
     }
 
     function onDebugMessage(value) {
-      console.log("mesg", value);
+      console.log("get msg", value);
       if (cur_client_info) {
         ChatLog_store.getMore(cur_client_info?.guid, true);
       }

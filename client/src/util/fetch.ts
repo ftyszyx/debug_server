@@ -14,6 +14,7 @@ import { PagePath } from "@/entity/api_path.js";
 // }
 // //@endif
 const api_url: string = import.meta.env.API_URL;
+console.log("apiurl", api_url);
 export const MyFetch = axios.create({
   baseURL: api_url,
   timeout: 0,

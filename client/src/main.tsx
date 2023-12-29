@@ -1,7 +1,8 @@
 import ReactDOM from "react-dom/client";
 import RootRouter from "@/route";
+import "./init_style.css";
 import "./index.css";
-import "normalize.css";
+// import "normalize.css";
 // import "@/assets/styles/default.less";
 // import "@/assets/styles/global.less";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(<RootRouter></RootRouter>);

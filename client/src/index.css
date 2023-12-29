@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 ul {
-  list-style: none;
   text-indent: 0;
   padding: 0;
 }
@@ -15,5 +14,6 @@ ul {
 .border-dark-lighten {
   border-style: solid;
   --tw-border-opacity: 1;
-  border-color: rgb(58 59 60 / var(--tw-border-opacity));
+  border-color: white;
+  /* border-color: rgb(58 59 60 / var(--tw-border-opacity)); */
 }

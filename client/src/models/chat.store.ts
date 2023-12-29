@@ -65,8 +65,10 @@ export const useChatStore = create<ChatLogStoreType>((set, get) => {
         const timeb = Date.parse(b.create_time);
         return timeb - timea;
       });
-      info.old_time = info.logs[info.logs.length - 1].create_time;
-      info.new_time = info.logs[0].create_time;
+      if (info.logs.length > 0) {
+        info.old_time = info.logs[info.logs.length - 1].create_time;
+        info.new_time = info.logs[0].create_time;
+      }
       set((state) => {
         return { ...state };
       });

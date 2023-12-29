@@ -12,7 +12,7 @@ export default function ChatConversationMenuItem(props: ChatConversationMenuItem
     <Link
       to={`${PagePath.DebugTerminal}/${props.conversation.client.id}`}
       className={`hover:bg-dark-lighten group relative flex items-stretch gap-2 py-2 px-5 transition duration-300 ${
-        props.conversation.client.id.toString() === id ? "!bg-[#252F3C]" : "!bg-green-300"
+        props.conversation.client.id.toString() === id ? "!bg-[#9056d2]" : "!bg-green-300"
       }`}
     >
       <div className="flex flex-grow flex-col items-start gap-1 py-1">
