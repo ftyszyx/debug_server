@@ -13,3 +13,7 @@ export function getPowerRedisKey(powerid: number) {
 export function getDebugClientKey(guid: string) {
   return `client_${guid}`;
 }
+
+export function getTableFieldCacheKey(table: string, field: string, value: string) {
+  return `${table}_${field}_${value}`;
+}

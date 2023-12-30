@@ -17,7 +17,7 @@ import { Observable } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { EventNameType, SocketIoMessageType } from 'src/entity/constant';
-import { WebClientReq } from 'src/entity/debug.entity';
+import { WebClientReq, WebClientResp } from 'src/entity/debug.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { ChatLogEntity } from './chat_Log.entity';
 import { Repository } from 'typeorm';
@@ -64,14 +64,25 @@ export class ChatServerGateWay
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
-    const user = await this.auth.CheckToken(client.handshake.headers);
-    this.clients.set(user.id, new ChatServerClient(user, client));
-    client[UserIdKey] = user.id;
-    this.myLogger.log(`chat user connect:${user.id}:${user.user_name}`, LogTagName);
+    console.log('handle connect ', client.handshake);
+    let userInfo: UserEntity = null;
+    try {
+      const token = client.handshake.auth.token;
+      userInfo = await this.auth.CheckToken(token);
+    } catch (err) {
+      this.myLogger.error(`connect err ${err}`);
+    }
+    if (userInfo == null) {
+      client.disconnect(true);
+    }
+    this.clients.set(userInfo.id, new ChatServerClient(userInfo, client));
+    client[UserIdKey] = userInfo.id;
+    this.myLogger.log(`chat user connect:${userInfo.id}:${userInfo.user_name}`, LogTagName);
   }
 
   handleDisconnect(client: Socket) {
     const user_id = client[UserIdKey];
+    if (user_id == null) return;
     const client_info = this.clients.get(user_id);
     this.clients.delete(user_id);
     this.myLogger.log(`chat user disconnect:${client_info.user.id}:${client_info.user.user_name}`, LogTagName);
@@ -86,7 +97,7 @@ export class ChatServerGateWay
     return { event: 'heartbeat', data: 'ok' };
   }
 
-  async sendMessage(from: string, userid: number, event_name: string, data: any) {
+  async sendMessage(from: string, userid: number, event_name: string, data: string) {
     const client = this.clients.get(userid);
     if (!client) {
       this.myLogger.log(`client is not found:${userid}`, LogTagName);
@@ -96,7 +107,8 @@ export class ChatServerGateWay
       this.myLogger.log(`client is offline:${userid}`, LogTagName);
       return;
     }
-    client.socket.emit(event_name, data);
+    const send_data: WebClientResp = { from_guid: from, to_user_id: userid, text: data };
+    client.socket.emit(event_name, send_data);
     const newlog = this.chat_log.create();
     newlog.from_user = from;
     newlog.to_users = [];
@@ -105,7 +117,7 @@ export class ChatServerGateWay
     await this.chat_log.save(newlog);
   }
   async sendDebugResp(from: string, userid: number, data: string) {
-    await this.sendMessage(from, userid, 'debug_cmd', data);
+    await this.sendMessage(from, userid, SocketIoMessageType.Debug_cmd_rep, data);
   }
 
   @SubscribeMessage(SocketIoMessageType.Debug_cmd_req)
@@ -113,9 +125,8 @@ export class ChatServerGateWay
     @MessageBody() data: WebClientReq,
     @ConnectedSocket() socket: Socket,
   ): Promise<Observable<WsResponse<unknown>>> {
-    data.from_user_id = socket[UserIdKey];
-    this.myLogger.log(`get debugcmd data:${data}`, LogTagName);
-    this.event.emit(EventNameType.ChatCmdEvnet, data);
+    this.myLogger.log(`get debugcmd data:${JSON.stringify(data)}`, LogTagName);
+    this.event.emit(EventNameType.WebCmdReqEvent, data);
     const newlog = this.chat_log.create();
     newlog.from_user = data.from_user_id.toString();
     newlog.to_users = [];

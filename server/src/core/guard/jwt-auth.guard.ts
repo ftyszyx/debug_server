@@ -14,7 +14,8 @@ export class JwtAuthGuard {
     const ispublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]);
     if (ispublic) return true;
     const request = context.switchToHttp().getRequest() as Request;
-    const user = await this.auth.CheckToken(request.headers);
+    const token = AuthService.getToken(request.headers);
+    const user = await this.auth.CheckToken(token);
     request['user'] = user;
     return user != null;
   }

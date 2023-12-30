@@ -24,4 +24,8 @@ export const SystemName = "系统";
 export const Guest_username = "guest";
 export const Guest_password = "123456";
 
-export const SocketIO_Debug_cmd = "debug_cmd";
+export const SOCKETIO_DEBUGCMD_REQ = "debug_cmd_req";
+export const SOCKETIO_DEBUGCMD_RESP = "debug_cmd_resp";
+
+export const SOCKET_IO_URL = import.meta.env.VITE_SOCKET_URL;
+export const API_URL = import.meta.env.VITE_API_URL;

@@ -1,4 +1,4 @@
-import { Net_Retcode } from "../config";
+import { API_URL, Net_Retcode } from "../config";
 import { message } from "antd";
 import axios, { AxiosRequestConfig } from "axios";
 import { GetToken } from "./tools.js";
@@ -13,10 +13,9 @@ import { PagePath } from "@/entity/api_path.js";
 //   });
 // }
 // //@endif
-const api_url: string = import.meta.env.API_URL;
-console.log("apiurl", api_url);
+console.log("apiurl", API_URL);
 export const MyFetch = axios.create({
-  baseURL: api_url,
+  baseURL: API_URL,
   timeout: 0,
   withCredentials: false, //请求是否带上cookie
 });

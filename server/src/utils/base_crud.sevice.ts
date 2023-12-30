@@ -5,6 +5,7 @@ import { HttpException, Inject, Injectable, LoggerService, OnModuleInit } from '
 import { Net_Retcode } from 'src/entity/constant';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { RedisService } from 'src/db/redis/redis.service';
+import { getTableFieldCacheKey } from './redis';
 
 @Injectable()
 export abstract class BaseCrudService<EntityT extends object> implements OnModuleInit {
@@ -60,7 +61,7 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
   }
 
   async getOrAddWithcache(info: Partial<EntityT>, find_key: string, find_value: string) {
-    const key = `${this.table_name}_${find_key}_${find_value}`;
+    const key = getTableFieldCacheKey(this.table_name, find_key, find_value);
     const res = await this.redis_servece.get<EntityT>(key);
     if (res != null) return res;
     const old_value = await this.repository.findOne({ where: { [find_key]: find_value } as FindOptionsWhere<EntityT> });

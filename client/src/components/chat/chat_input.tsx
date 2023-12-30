@@ -1,40 +1,41 @@
+import { ClientReq } from "@/entity/chat_log.entity";
 import { SendOutlined } from "@ant-design/icons";
-import { useRef, useState, FormEvent } from "react";
+import { Form, Input, message } from "antd";
+import { useForm } from "antd/es/form/Form";
 interface ChatInputProps {
-  onSendMessage: (text: string) => void;
+  onSendMessage: (data: ClientReq) => void;
   disabled: boolean;
 }
 export default function ChatInput(props: ChatInputProps) {
-  const textInputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState("");
-  const handleFormSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-    props.onSendMessage(inputValue);
-    setInputValue("");
+  const [data_form] = useForm<ClientReq>();
+  const handleFormSubmit = async (value: ClientReq) => {
+    console.log("subimt", value);
+    props.onSendMessage(value);
+    data_form.resetFields();
   };
 
   return (
     <div className="border-dark-lighten flex h-16 items-stretch gap-1 border-t px-4 ">
-      <form onSubmit={handleFormSubmit} className="flex flex-grow items-stretch gap-1">
-        <div className="relative flex flex-grow items-center">
-          <input
-            disabled={props.disabled}
-            maxLength={1000}
-            ref={textInputRef}
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
-            className="bg-dark-lighten h-9 w-full rounded-full pl-3 pr-10 outline-none"
-            type="text"
-            placeholder="输入命令..."
-          />
+      <Form<ClientReq>
+        form={data_form}
+        layout="inline"
+        name="control-hooks"
+        onFinish={handleFormSubmit}
+        style={{ maxWidth: 600 }}
+        initialValues={{ cmd: "", param: "" }}
+      >
+        <Form.Item name="cmd" label="命令" rules={[{ required: true }]}>
+          <Input className="bg-dark-lighten h-9 w-full rounded-full pl-3 pr-10 outline-none" />
+        </Form.Item>
+        <Form.Item name="param" label="参数">
+          <Input className="bg-dark-lighten h-9 w-full rounded-full pl-3 pr-10 outline-none" />
+        </Form.Item>
+        <Form.Item>
           <button disabled={props.disabled} className="text-primary flex flex-shrink-0 items-center text-2xl">
             <SendOutlined />
           </button>
-        </div>
-      </form>
+        </Form.Item>
+      </Form>
     </div>
   );
 }

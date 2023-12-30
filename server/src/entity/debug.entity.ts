@@ -1,5 +1,3 @@
-import { ApiResp } from './api.entity';
-
 export interface ClientReq {
   cmd: string;
   param: string;
@@ -10,7 +8,11 @@ export interface WebClientReq extends ClientReq {
   from_user_id: number;
 }
 
-export interface WebClientResp extends ApiResp<string> {}
+export interface WebClientResp {
+  from_guid: string;
+  to_user_id: number;
+  text: string;
+}
 
 export enum ClientCmdType {
   RESP = 'resp',

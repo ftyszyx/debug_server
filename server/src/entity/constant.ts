@@ -35,7 +35,7 @@ export enum PowerCodeType {
 
 export enum EventNameType {
   //chat server
-  ChatCmdEvnet = 'chat.debug_cmd',
+  WebCmdReqEvent = 'chat.debug_cmd_req',
 
   //debug server
   DebugServerClientConnect = 'debugserver.clientconnect',
@@ -43,5 +43,6 @@ export enum EventNameType {
 }
 
 export enum SocketIoMessageType {
-  Debug_cmd_req = 'debug_cmd',
+  Debug_cmd_req = 'debug_cmd_req',
+  Debug_cmd_rep = 'debug_cmd_resp',
 }

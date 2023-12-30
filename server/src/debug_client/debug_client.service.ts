@@ -6,7 +6,7 @@ import { BaseCrudService } from 'src/utils/base_crud.sevice';
 import { Repository } from 'typeorm';
 import { DebugClientEntity } from './debug_client.entity';
 import { RedisService } from 'src/db/redis/redis.service';
-import { getDebugClientKey } from 'src/utils/redis';
+import { getDebugClientKey, getTableFieldCacheKey } from 'src/utils/redis';
 import { EventNameType, Net_Retcode, SocketIoMessageType } from 'src/entity/constant';
 import { ClientSocketItem, DebugServerService } from 'src/debug_server/debug_server.service';
 import { ChatServerGateWay } from 'src/chat_server/chat_server.gateway';
@@ -24,10 +24,10 @@ export class DebugClientService extends BaseCrudService<DebugClientEntity> {
     this.init(DebugClientRepository, DebugClientEntity);
   }
 
-  @OnEvent(EventNameType.ChatCmdEvnet)
+  @OnEvent(EventNameType.WebCmdReqEvent)
   async handleChatCmd(payload: WebClientReq) {
     console.log('get req', payload);
-    const key = getDebugClientKey(payload.client_guid);
+    const key = getTableFieldCacheKey(this.table_name, 'guid', payload.client_guid);
     const res = await this.redis.get<DebugClientEntity>(key);
     if (res == null) throw new HttpException(`${payload.client_guid}不连接`, Net_Retcode.ERR);
     this.debug_server.sendMsgTo(payload.from_user_id, payload.client_guid, `${payload.cmd} ${payload.param}`);

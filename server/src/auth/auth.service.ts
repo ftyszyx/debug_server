@@ -46,9 +46,10 @@ export class AuthService {
     return this.jwtService.decode(token) as TokenPayload;
   }
 
-  async CheckToken(req_header: IncomingHttpHeaders) {
+  // async CheckToken(req_header: IncomingHttpHeaders) {
+  async CheckToken(token: string) {
     const http_config = this.config.get<AppHttpConfig>('http');
-    const token = AuthService.getToken(req_header);
+    // const token = AuthService.getToken(req_header);
     const payload = this.jwtService.decode(token) as TokenPayload;
     const token_id = getTokenRedisKey(payload.id);
     const cache_token = await this.redis.get(token_id);
