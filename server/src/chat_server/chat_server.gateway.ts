@@ -64,7 +64,7 @@ export class ChatServerGateWay
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
-    console.log('handle connect ', client.handshake);
+    // console.log('handle connect ', client.handshake);
     let userInfo: UserEntity = null;
     try {
       const token = client.handshake.auth.token;

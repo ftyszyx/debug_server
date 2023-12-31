@@ -1,4 +1,4 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { ConsoleLogger, Inject, Injectable, LoggerService } from '@nestjs/common';
 import { Server as NetSocket, Socket } from 'net';
 import * as net from 'net';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -10,7 +10,9 @@ import { DebugClientEntity } from 'src/debug_client/debug_client.entity';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EventNameType } from 'src/entity/constant';
+import { from } from 'rxjs';
 const HEAD_SIZE = 12;
+const CLIENT_TIME_OUT = 30;
 const LogTag = 'debugServer';
 export class ClientSocketItem {
   onMessage: (cmd: string, msg: string) => Promise<void>;
@@ -19,6 +21,7 @@ export class ClientSocketItem {
   os_name: string = '';
   guid: string = '';
   protocol_address: number = 0;
+  lastActiveTime: number = 0;
   constructor(public socket: Socket) {}
 }
 
@@ -48,15 +51,18 @@ export class DebugServerService {
 
   async sendMsgTo(from_user_id: number, guid: string, msg: string) {
     const client = this.clients_byguid.get(guid);
-    if (client == null) throw new Error('not client');
+    if (client == null) return;
     const text_arr = Buffer.from(msg, 'utf-8');
     const total_len = HEAD_SIZE + text_arr.length;
     const send_buffer = Buffer.alloc(total_len);
     send_buffer.writeInt32LE(total_len, 0);
     send_buffer.writeInt32LE(from_user_id, 4);
     send_buffer.writeInt32LE(client.protocol_address, 8);
-    send_buffer.write(msg, 'utf-8');
-    client.socket.write(send_buffer);
+    send_buffer.write(msg, HEAD_SIZE, 'utf-8');
+    console.log('send mes', msg, from_user_id, client.protocol_address, total_len, send_buffer.buffer);
+    client.socket.write(send_buffer, (err) => {
+      console.log('send data err', err);
+    });
   }
 
   bindHandler(socket: Socket) {
@@ -64,12 +70,26 @@ export class DebugServerService {
     this.logger.log(`client bind ip:${JSON.stringify(socket.address())} id:${id}`, LogTag);
     socket.on('data', async (msg: Buffer) => this.handleClientMessage(socket, msg));
     socket.on('error', (err) => {
+      const id = socket['id'];
+      console.log('socket err', err);
       this.logger.error(`sock:${id} err:${err.message}`);
     });
     socket.on('close', (has_err) => {
+      const id = socket['id'];
+      const clientinfo = this.clients.get(id);
+      if (clientinfo == null) {
+        return;
+      }
       this.logger.error(`sock:${id} closed err:${has_err}`);
       this.connect_id--;
       this.clients.delete(id);
+      this.clients_byguid.delete(clientinfo.guid);
+    });
+    socket.on('timeout', () => {
+      console.log('socket timeout');
+    });
+    socket.on('end', () => {
+      console.log('socket end');
     });
   }
 
@@ -77,21 +97,20 @@ export class DebugServerService {
     const id = socket['id'];
     // this.logger.log(`debugserver get id:${id} data:${msg.byteLength}`, LogTag);
     const len = msg.byteLength;
-    if (len <= HEAD_SIZE) return;
     const package_len = msg.readInt32LE();
     const package_from = msg.readInt32LE(4);
     const to_userid = msg.readInt32LE(8);
+    const client = this.clients.get(id);
+    client.lastActiveTime = Date.now();
+    if (len <= HEAD_SIZE) return;
     const body = msg.buffer.slice(HEAD_SIZE, len);
     const text = Buffer.from(body).toString();
     this.logger.log(`len:${package_len} from:${package_from} to:${to_userid} text:${text}`, LogTag);
-    const client = this.clients.get(id);
     const cmd_end = text.indexOf(' ');
     client.protocol_address = package_from;
-
     if (cmd_end > 0) {
       const cmdtext = text.slice(0, cmd_end).trim();
       const parmas = text.slice(cmd_end).trim();
-
       this.logger.log(`cmd:${cmdtext} parmas:${parmas}`);
       if (cmdtext == ClientCmdType.SET) {
         const setarr = parmas.split(' ');
