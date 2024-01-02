@@ -19,24 +19,14 @@ import { AuthService } from 'src/auth/auth.service';
 import { EventNameType, SocketIoMessageType } from 'src/entity/constant';
 import { WebClientReq, WebClientResp } from 'src/entity/debug.entity';
 import { UserEntity } from 'src/user/user.entity';
-import { ChatLogEntity } from './chat_Log.entity';
+import { ChatLogEntity, ChatLogMoreReq, ChatLogMoreResp } from './chat_Log.entity';
 import { Repository } from 'typeorm';
 import { BaseCrudService } from 'src/utils/base_crud.sevice';
-import { ChatLogMoreReq, ChatLogMoreResp } from 'src/entity/api.entity';
+import { JoinRoomReq } from 'src/entity/api.entity';
+import { ChatRoomService } from 'src/chat_room/chat_room.service';
+import { cli } from 'winston/lib/winston/config';
 export const HEART_BEAT_INTERVAL = 3000;
 const LogTagName = 'chatServer';
-const UserIdKey = 'user_id';
-
-export class ChatServerClient {
-  public lastActiveTime: number;
-  constructor(
-    public user: UserEntity,
-    public socket: Socket,
-  ) {}
-  isActive(): boolean {
-    return Date.now() - this.lastActiveTime < HEART_BEAT_INTERVAL * 2;
-  }
-}
 
 @WebSocketGateway({ cors: { origin: '*' } })
 @Injectable()
@@ -44,12 +34,12 @@ export class ChatServerGateWay
   extends BaseCrudService<ChatLogEntity>
   implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
-  public clients = new Map<number, ChatServerClient>();
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly myLogger: WinstonLogger,
     private auth: AuthService,
     @InjectRepository(ChatLogEntity)
     private readonly chat_log: Repository<ChatLogEntity>,
+    private chat_room: ChatRoomService,
     private event: EventEmitter2,
   ) {
     super();
@@ -59,12 +49,12 @@ export class ChatServerGateWay
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: any) {
+  afterInit(server: Server) {
     this.myLogger.log('socket.io init', LogTagName);
+    this.server = server;
   }
 
-  async handleConnection(client: Socket, ...args: any[]) {
-    // console.log('handle connect ', client.handshake);
+  async handleConnection(client: Socket) {
     let userInfo: UserEntity = null;
     try {
       const token = client.handshake.auth.token;
@@ -74,50 +64,44 @@ export class ChatServerGateWay
     }
     if (userInfo == null) {
       client.disconnect(true);
+      return;
     }
-    this.clients.set(userInfo.id, new ChatServerClient(userInfo, client));
-    client[UserIdKey] = userInfo.id;
+    client['user'] = userInfo;
     this.myLogger.log(`chat user connect:${userInfo.id}:${userInfo.user_name}`, LogTagName);
   }
 
   handleDisconnect(client: Socket) {
-    const user_id = client[UserIdKey];
-    if (user_id == null) return;
-    const client_info = this.clients.get(user_id);
-    this.clients.delete(user_id);
-    this.myLogger.log(`chat user disconnect:${client_info.user.id}:${client_info.user.user_name}`, LogTagName);
+    this.myLogger.log(`chat user disconnect:${client.id}`, LogTagName);
   }
 
-  @SubscribeMessage('heartbeat')
-  heartbeat(@ConnectedSocket() client: Socket): WsResponse<unknown> {
-    const user_id = client[UserIdKey];
-    const client_info = this.clients.get(user_id);
-    this.myLogger.log(`heartbeat:${user_id}`, LogTagName);
-    client_info.lastActiveTime = Date.now();
-    return { event: 'heartbeat', data: 'ok' };
+  getUserBase(client: Socket) {
+    const user = client['user'];
+    if (user) return user as UserEntity;
+    return null;
+  }
+  @SubscribeMessage(SocketIoMessageType.Join_room)
+  async handleJoin(client: Socket, req: JoinRoomReq) {
+    const user = this.getUserBase(client);
+    if (user == null) return;
+    const room_name = `${user.id}-${req.guid}`;
+    this.myLogger.log(`join room req: ${JSON.stringify(req)}`, LogTagName);
+    const res = await this.chat_room.AddOneRoom(room_name, [user.id.toString(), req.guid]);
+    client.join(res.id.toString());
+    client.send(SocketIoMessageType.Join_room_resp, res);
   }
 
-  async sendMessage(from: string, userid: number, event_name: string, data: string) {
-    const client = this.clients.get(userid);
-    if (!client) {
-      this.myLogger.log(`client is not found:${userid}`, LogTagName);
-      return;
-    }
-    if (client.isActive() == false) {
-      this.myLogger.log(`client is offline:${userid}`, LogTagName);
-      return;
-    }
-    const send_data: WebClientResp = { from_guid: from, to_user_id: userid, text: data };
-    client.socket.emit(event_name, send_data);
-    const newlog = this.chat_log.create();
-    newlog.from_user = from;
-    newlog.to_users = [];
-    newlog.to_user = userid.toString();
-    newlog.text = `${data}`;
-    await this.chat_log.save(newlog);
+  @SubscribeMessage(SocketIoMessageType.leave_room)
+  handleLeave(client: Socket, roomId: string) {
+    this.myLogger.log(`leave room req: ${roomId}`, LogTagName);
+    client.leave(roomId.toString());
+    return roomId;
   }
-  async sendDebugResp(from: string, userid: number, data: string) {
-    await this.sendMessage(from, userid, SocketIoMessageType.Debug_cmd_rep, data);
+
+  async sendMessageToClient(guid: string, room_id: number, data: string) {
+    const send_data: WebClientResp = { room_id, from_guid: guid, text: data };
+    this.myLogger.log(`send debugcmd resp:${JSON.stringify(send_data)}`, LogTagName);
+    this.server.to(room_id.toString()).emit(SocketIoMessageType.Debug_cmd_rep, send_data);
+    await this.AddChatLog(guid, room_id, data);
   }
 
   @SubscribeMessage(SocketIoMessageType.Debug_cmd_req)
@@ -125,22 +109,27 @@ export class ChatServerGateWay
     @MessageBody() data: WebClientReq,
     @ConnectedSocket() socket: Socket,
   ): Promise<Observable<WsResponse<unknown>>> {
-    this.myLogger.log(`get debugcmd data:${JSON.stringify(data)}`, LogTagName);
+    const user = this.getUserBase(socket);
+    if (user == null) return;
+    this.myLogger.log(`get debugcmd req:${JSON.stringify(data)}`, LogTagName);
     this.event.emit(EventNameType.WebCmdReqEvent, data);
-    const newlog = this.chat_log.create();
-    newlog.from_user = data.from_user_id.toString();
-    newlog.to_users = [];
-    newlog.to_user = data.client_guid;
-    newlog.text = `cmd:${data.cmd} ${data.param}`;
-    await this.chat_log.save(newlog);
+    await this.AddChatLog(user.id.toString(), data.room_id, `cmd:${data.cmd} ${data.param}`);
     return;
   }
 
-  async getChatLogMore(req: ChatLogMoreReq, user: UserEntity) {
-    let qb = await this.chat_log.createQueryBuilder(this.table_name);
+  async AddChatLog(from: string, roomid: number, text: string) {
+    const newlog = this.chat_log.create();
+    newlog.from_user = from;
+    newlog.room_id = roomid;
+    newlog.text = text;
+    await this.chat_log.save(newlog);
+  }
+
+  async getChatLogMore(req: ChatLogMoreReq) {
+    const qb = await this.chat_log.createQueryBuilder(this.table_name);
     const res: ChatLogMoreResp = { logs: [], total: 0 };
     res.total = await qb.getCount();
-    qb.where('chat_log.from_user= :id1', { id1: user.id.toString() }).andWhere('chat_log.to_user=:id2', { id2: req.guid });
+    qb.where('chat_log.room_id= :id1', { id1: req.room_id });
     if (req.start_time != '') {
       qb.andWhere('chat_log.create_time >:time', { time: req.start_time });
     }
@@ -150,24 +139,6 @@ export class ChatServerGateWay
     qb.orderBy('chat_log.create_time', 'DESC');
     qb.limit(req.num);
     res.logs = await qb.getMany();
-
-    const remain_num = req.num - res.logs.length;
-    if (remain_num > 0) {
-      qb = await this.chat_log.createQueryBuilder(this.table_name);
-      qb.where('chat_log.to_user= :id1', { id1: user.id.toString() }).andWhere('chat_log.from_user=:id2', { id2: req.guid });
-      if (req.start_time != '') {
-        qb.andWhere('chat_log.create_time >:time', { time: req.start_time });
-      }
-      if (req.end_time != '') {
-        qb.andWhere('chat_log.create_time <:time', { time: req.end_time });
-      }
-      qb.orderBy('chat_log.create_time', 'DESC');
-      qb.limit(remain_num);
-      const res2 = await qb.getMany();
-      res2.forEach((item) => {
-        res.logs.push(item);
-      });
-    }
     return res;
   }
 }

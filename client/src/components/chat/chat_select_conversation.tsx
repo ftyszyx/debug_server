@@ -10,7 +10,6 @@ interface ChatSelectConversationProps {
 }
 export default function ChatSelectConversation(props: ChatSelectConversationProps) {
   const useClientsStore = useDebugClientStore() as ClientStore;
-  const terminalStore = useTerminalStore() as TerminalStoreType;
   const history = useHistory();
 
   const [selected, setSelected] = useState<string[]>([]);
@@ -30,8 +29,6 @@ export default function ChatSelectConversation(props: ChatSelectConversationProp
     for (let i = 0; i < selected.length; i++) {
       const clientinfo = useClientsStore.items.find((x) => x.guid == selected[i]);
       if (clientinfo != null) {
-        const new_terminal: TerminalInfo = { client: clientinfo, create_time: new Date() };
-        terminalStore.addItem(new_terminal);
         if (goto_url == "") {
           goto_url = `${PagePath.DebugTerminal}/${clientinfo.id}`;
         }

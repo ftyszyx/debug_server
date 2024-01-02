@@ -1,6 +1,6 @@
-import { ClientReq } from "@/entity/chat_log.entity";
+import { ClientReq } from "@/entity/socketio.entity";
 import { SendOutlined } from "@ant-design/icons";
-import { Form, Input, message } from "antd";
+import { Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
 interface ChatInputProps {
   onSendMessage: (data: ClientReq) => void;

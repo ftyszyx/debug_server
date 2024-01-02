@@ -38,11 +38,14 @@ export enum ApiPath {
   getClientAllValid = "/api/debug_client/getAllValid",
   getClientLists = "/api/debug_client/getList",
   upDebugClient = "/api/debug_client/up",
+  getDebugClientById = "/api/debug_client/getById",
   //log
   getLogList = "/api/my_log/getList",
   //chatlog
   getchatLogList = "/api/chat_server/getList",
   getChatLogMore = "/api/chat_server/getChatLogMore",
+  //
+  getChatRoom = "/api/chat_room/getRoomById",
 }
 
 export enum PagePath {

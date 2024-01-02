@@ -9,16 +9,24 @@ export class ChatLogEntity {
   @Index('from_user')
   from_user: string;
 
-  @Column('simple-array')
-  to_users: string[];
-
-  @Column({ length: 255, default: '' })
-  @Index('to_user')
-  to_user: string;
+  @Column('int')
+  @Index('room_id')
+  room_id: number;
 
   @Column('text')
   text: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   create_time: Date;
+}
+export interface ChatLogMoreReq {
+  start_time: string;
+  end_time: string;
+  num: number;
+  room_id: number;
+}
+
+export interface ChatLogMoreResp {
+  logs: ChatLogEntity[];
+  total: number;
 }

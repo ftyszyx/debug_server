@@ -5,7 +5,7 @@ import { useState } from "react";
 import ChatSelectConversation from "./chat_select_conversation";
 import { TerminalStoreType, useTerminalStore } from "@/models/terminal.store";
 import ChatConversationMenuItem from "./chat_conversation_menuItem";
-import { ApiPath, PagePath } from "@/entity/api_path";
+import { PagePath } from "@/entity/api_path";
 export default function ChatSideBar() {
   const [showNewConversation, setShowNewConversation] = useState(false);
   const useTerminal = useTerminalStore() as TerminalStoreType;
@@ -30,7 +30,7 @@ export default function ChatSideBar() {
         </div>
         <div>
           {useTerminal.items.map((item) => {
-            return <ChatConversationMenuItem conversation={item} key={item.client.guid}></ChatConversationMenuItem>;
+            return <ChatConversationMenuItem conversation={item} key={item.room.name}></ChatConversationMenuItem>;
           })}
         </div>
       </div>

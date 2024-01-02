@@ -5,7 +5,7 @@ import { MyFetchPost } from "@/util/fetch";
 import { create } from "kl_state";
 
 export interface ChatConverSationType {
-  guid: string;
+  room_id: number;
   logs: ChatLog[];
   total: number;
   old_time: string;
@@ -13,20 +13,20 @@ export interface ChatConverSationType {
 }
 export interface ChatLogStoreType {
   conversations: ChatConverSationType[];
-  conversation_map: Map<string, ChatConverSationType>;
-  getMore: (guid: string, forece_new?: boolean) => Promise<void>;
-  getLogsByGuid: (guid: string) => ChatConverSationType;
-  addMessage: (guid: string, log: ChatLog) => void;
+  conversation_map: Map<number, ChatConverSationType>;
+  getMore: (roomid: number, forece_new?: boolean) => Promise<void>;
+  getLogsByGuid: (roomid: number) => ChatConverSationType;
+  addMessage: (roomid: number, log: ChatLog) => void;
 }
 
 export const useChatStore = create<ChatLogStoreType>((set, get) => {
   let ret: ChatLogStoreType = {
-    conversation_map: new Map<string, ChatConverSationType>(),
+    conversation_map: new Map<number, ChatConverSationType>(),
     conversations: [],
-    getLogsByGuid(guid: string) {
-      if (this.conversation_map.has(guid) == false) {
+    getLogsByGuid(room_id: number) {
+      if (this.conversation_map.has(room_id) == false) {
         const info: ChatConverSationType = {
-          guid,
+          room_id,
           logs: [],
           old_time: "",
           new_time: "",
@@ -34,22 +34,19 @@ export const useChatStore = create<ChatLogStoreType>((set, get) => {
         };
         let items = get().conversations;
         let item_map = get().conversation_map;
-        item_map.set(guid, info);
+        item_map.set(room_id, info);
         items.push(info);
-        // set((state) => {
-        //   return { ...state, conversation_map: item_map, conversations: items };
-        // });
       }
-      return get().conversation_map.get(guid)!;
+      return get().conversation_map.get(room_id)!;
     },
 
-    async getMore(guid: string, forece_new = false) {
-      const info = get().getLogsByGuid(guid);
+    async getMore(room_id: number, forece_new = false) {
+      const info = get().getLogsByGuid(room_id);
       const req_data: ChatLogMoreReq = {
         end_time: info.old_time,
         start_time: "",
         num: 20,
-        guid: guid,
+        room_id,
       };
       if (forece_new) {
         req_data.end_time = "";
@@ -74,8 +71,8 @@ export const useChatStore = create<ChatLogStoreType>((set, get) => {
       });
     },
 
-    addMessage(guid, log) {
-      const info = get().getLogsByGuid(guid);
+    addMessage(room_id, log) {
+      const info = get().getLogsByGuid(room_id);
       if (info.new_time == "") {
         info.logs.push(log);
       } else {

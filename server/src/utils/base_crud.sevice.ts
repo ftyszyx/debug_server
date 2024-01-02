@@ -46,11 +46,8 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
     const new_data = this.repository.create();
     const entity = Object.assign(new_data, info);
     await this.recv_data_fix([entity as EntityT]);
-    console.log('get data', entity);
     const res = await this.repository.save(entity as EntityT);
-    console.log('get res', res);
     await this.send_data_fix([res]);
-    console.log('get res2', res);
     return res;
   }
 
@@ -74,6 +71,18 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
     return new_value;
   }
 
+  async getOneWithCache(find_key: string, find_value: string) {
+    const key = getTableFieldCacheKey(this.table_name, find_key, find_value);
+    const res = await this.redis_servece.get<EntityT>(key);
+    if (res != null) return res;
+    const old_value = await this.repository.findOne({ where: { [find_key]: find_value } as FindOptionsWhere<EntityT> });
+    if (old_value) {
+      await this.redis_servece.set(key, old_value, 0);
+      return old_value;
+    }
+    return null;
+  }
+
   // abstract getListBuilder(qb: SelectQueryBuilder<EntityT>);
   async getList(query: ListReq<EntityT>): Promise<ListResp<EntityT>> {
     const qb = await this.repository.createQueryBuilder(this.table_name);
@@ -89,10 +98,8 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
   }
 
   async findById(id): Promise<EntityT> {
-    // console.log('find by id', id);
     const res_item = await this.repository.findOne({ where: { id } as FindOptionsWhere<EntityT> });
     await this.send_data_fix([res_item]);
-    // console.log('get item', res_item);
     return res_item;
   }
 
@@ -100,12 +107,10 @@ export abstract class BaseCrudService<EntityT extends object> implements OnModul
     let res_items: EntityT[] = [];
     if (ids) {
       if (ids.length > 1) {
-        // console.log('setlect array');
         res_items = await this.repository
           .createQueryBuilder(this.table_name)
           .where(this.table_name + '.id in (:ids)', { ids: ids })
           .getMany();
-        // console.log('get items', res_items);
       } else if (ids.length == 1) {
         const id = ids[0];
         const item = await this.repository.findOneBy({ id } as FindOptionsWhere<EntityT>);

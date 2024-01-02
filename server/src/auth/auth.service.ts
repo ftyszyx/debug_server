@@ -22,7 +22,6 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
   async login(req: Request) {
-    // console.log('user login', user);
     const user = await this.CheckLogin(req);
     const payload: TokenPayload = { user_name: user.user_name, id: user.id };
     const access_token = this.jwtService.sign(payload);
@@ -72,7 +71,6 @@ export class AuthService {
       .getOne();
     if (!user) throw new HttpException('用户不存在', Net_Retcode.ERR);
     if (!compareSync(login_req.password, user.password)) {
-      console.log('true pass', user.password);
       throw new HttpException('密码错误', Net_Retcode.ERR);
     }
     return user;

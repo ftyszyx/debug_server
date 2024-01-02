@@ -44,7 +44,6 @@ export class UserEntity {
 
   @BeforeInsert()
   async hashPassword() {
-    // console.log('before add', this);
     if (this.password) this.password = bcrypt.hashSync(this.password, 10);
   }
 

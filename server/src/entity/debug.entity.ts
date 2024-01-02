@@ -5,13 +5,13 @@ export interface ClientReq {
 
 export interface WebClientReq extends ClientReq {
   client_guid: string;
-  from_user_id: number;
+  room_id: number;
 }
 
 export interface WebClientResp {
   from_guid: string;
-  to_user_id: number;
   text: string;
+  room_id: number;
 }
 
 export enum ClientCmdType {

@@ -1,6 +1,8 @@
 import { io } from "socket.io-client";
 import { GetToken } from "@/util/tools";
 import { SOCKET_IO_URL } from "@/config";
+import { JoinRoomReq, SocketIoMessageType } from "@/entity/socketio.entity";
+import { ChatRoom } from "@/entity/chat_room.entity";
 
 class SocketService {
   isconnected = false;
@@ -32,10 +34,25 @@ class SocketService {
     this.socket.emit(message_type, data);
   }
 
-  subscribeToMessages(message_type: string) {
-    this.socket.on(message_type, (value) => {
-      console.log("get message", message_type, value);
-    });
+  addListener<T>(message_type: string, callback: (data: T) => void) {
+    this.socket.on(message_type, callback);
+  }
+
+  addOnceListener<T>(message_type: string, callback: (data: T) => void) {
+    this.socket.once(message_type, callback);
+  }
+
+  removeListener<T>(message_type: string, callback: (data: T) => void) {
+    this.socket.off(message_type, callback);
+  }
+
+  joinRoom(req: JoinRoomReq, callback?: (data: ChatRoom) => void) {
+    if (callback) this.socket.once(SocketIoMessageType.Join_room, callback);
+    this.socket.emit(SocketIoMessageType.Join_room, req);
+  }
+
+  leaveRoom(roomid: string) {
+    this.socket.emit(SocketIoMessageType.leave_room, roomid);
   }
 }
 

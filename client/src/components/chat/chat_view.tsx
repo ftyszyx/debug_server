@@ -1,13 +1,12 @@
-import { ListReq, ListResp, PageReq } from "@/entity/api.entity";
-import { DebugClient } from "@/entity/debug_client.entity";
 import { UserStore } from "@/entity/user.entity";
 import { ChatLogStoreType, UseUserStore, useChatStore } from "@/models";
 import { useEffect, useMemo, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ChatMessage from "./chat_message";
+import { ChatRoom } from "@/entity/chat_room.entity";
 
 interface ChatViewProps {
-  client?: DebugClient;
+  client?: ChatRoom;
   inputOffset: number;
 }
 export default function ChatView(props: ChatViewProps) {
@@ -17,12 +16,12 @@ export default function ChatView(props: ChatViewProps) {
   // const isWindowFocus = useRef(true);
   useEffect(() => {
     if (props.client) {
-      chatLogStore.getMore(props.client.guid, true);
+      chatLogStore.getMore(props.client.id, true);
     }
   }, [props.client]);
   const curLogInfo = useMemo(() => {
     if (props.client) {
-      return chatLogStore.getLogsByGuid(props.client?.guid);
+      return chatLogStore.getLogsByGuid(props.client?.id);
     }
   }, [useChatStore, props.client]);
   return (
@@ -30,7 +29,7 @@ export default function ChatView(props: ChatViewProps) {
       dataLength={curLogInfo?.total || 0}
       next={() => {
         if (props.client) {
-          chatLogStore.getMore(props.client?.guid, false);
+          chatLogStore.getMore(props.client?.id, false);
         }
       }}
       inverse

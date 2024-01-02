@@ -16,7 +16,6 @@ export class UserController {
   @Post('add')
   @PowerCode({ module: ModuleType.User, code: PowerCodeType.Add })
   async add(@Body() user: UserEntity) {
-    // console.log('user add ');
     return await this.userService.addOne(user);
   }
 

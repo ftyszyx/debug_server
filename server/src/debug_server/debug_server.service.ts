@@ -10,7 +10,6 @@ import { DebugClientEntity } from 'src/debug_client/debug_client.entity';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EventNameType } from 'src/entity/constant';
-import { from } from 'rxjs';
 const HEAD_SIZE = 12;
 const CLIENT_TIME_OUT = 30;
 const LogTag = 'debugServer';
@@ -23,6 +22,9 @@ export class ClientSocketItem {
   protocol_address: number = 0;
   lastActiveTime: number = 0;
   constructor(public socket: Socket) {}
+  isActive(): boolean {
+    return Date.now() - this.lastActiveTime < CLIENT_TIME_OUT;
+  }
 }
 
 @Injectable()
@@ -59,9 +61,9 @@ export class DebugServerService {
     send_buffer.writeInt32LE(from_user_id, 4);
     send_buffer.writeInt32LE(client.protocol_address, 8);
     send_buffer.write(msg, HEAD_SIZE, 'utf-8');
-    console.log('send mes', msg, from_user_id, client.protocol_address, total_len, send_buffer.buffer);
+    this.logger.log(`send mess to ${from_user_id}->${guid} msg:${msg} buffer:${send_buffer.buffer}`, LogTag);
     client.socket.write(send_buffer, (err) => {
-      console.log('send data err', err);
+      this.logger.error(`send data err:${err}`, LogTag);
     });
   }
 
@@ -71,8 +73,7 @@ export class DebugServerService {
     socket.on('data', async (msg: Buffer) => this.handleClientMessage(socket, msg));
     socket.on('error', (err) => {
       const id = socket['id'];
-      console.log('socket err', err);
-      this.logger.error(`sock:${id} err:${err.message}`);
+      this.logger.error(`sock:${id} err:${err.message}`, LogTag);
     });
     socket.on('close', (has_err) => {
       const id = socket['id'];
@@ -80,16 +81,16 @@ export class DebugServerService {
       if (clientinfo == null) {
         return;
       }
-      this.logger.error(`sock:${id} closed err:${has_err}`);
+      this.logger.error(`sock:${id} closed err:${has_err}`, LogTag);
       this.connect_id--;
       this.clients.delete(id);
       this.clients_byguid.delete(clientinfo.guid);
     });
     socket.on('timeout', () => {
-      console.log('socket timeout');
+      this.logger.error(`timeout`, LogTag);
     });
     socket.on('end', () => {
-      console.log('socket end');
+      this.logger.error(`end`, LogTag);
     });
   }
 

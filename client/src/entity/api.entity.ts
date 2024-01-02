@@ -37,6 +37,9 @@ export interface ChangePassReq {
 export interface IdsReq {
   ids: number[];
 }
+export interface IdReq {
+  id: number;
+}
 export interface UserListReq extends PageReq {
   username: string;
   status: number;
@@ -70,7 +73,7 @@ export interface ChatLogMoreReq {
   start_time: string;
   end_time: string;
   num: number;
-  guid: string;
+  room_id: number;
 }
 
 export interface ChatLogMoreResp {

@@ -35,3 +35,12 @@ export interface AppConfig {
   redis: AppRedisConfig;
   debug_server: DebugServerConfig;
 }
+
+export class ChatSocketException extends Error {
+  err_code;
+  constructor(msg: string, code: number) {
+    super();
+    this.err_code = code;
+    this.message = msg;
+  }
+}

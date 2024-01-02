@@ -30,17 +30,14 @@ export class RolesGuard implements CanActivate {
     if (!user) return false;
     const userinfo = user as UserEntity;
     if (userinfo.roles.includes(RoleType.SuperAdmin)) return true;
-    // console.log('role guard', user, code_info);
     for (let i = 0; i < userinfo.roles.length; i++) {
       const role_id = userinfo.roles[i];
       const role_key = getRoleRedisKey(role_id);
       let role_info = await this.redis.get<RoleEntity>(role_key);
-      // console.log('get role', role_info);
       if (!role_info) {
         role_info = await this.dataSource.getRepository(RoleEntity).findOne({
           where: { id: role_id },
         });
-        // console.log('cache role', role_info);
         await this.redis.set(role_key, role_info, 0);
       }
 
@@ -56,14 +53,12 @@ export class RolesGuard implements CanActivate {
           power_list.push(power_info);
         }
         if (power_list.length == 0) {
-          // console.log('get powers', role_info.powers);
           power_list = await this.dataSource
             .getRepository(PowerEntity)
             .createQueryBuilder('power')
             .where(`power.id in (:invalues)`, { invalues: role_info.powers })
             .getMany();
 
-          // console.log('cache powers', power_list);
           power_list.forEach(async (item) => {
             await this.redis.set(getPowerRedisKey(item.id), item, 0);
           });
@@ -71,7 +66,6 @@ export class RolesGuard implements CanActivate {
       }
       const find_one = power_list.find((x) => x.module == code_info.module && x.code === code_info.code);
       if (find_one) {
-        console.log('find power', find_one);
         return true;
       }
     }

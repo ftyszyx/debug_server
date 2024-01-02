@@ -14,7 +14,7 @@ import * as winston from 'winston';
 import 'winston-daily-rotate-file';
 import { LoggerMiddleware } from './core/middleware/logger/logger.middleware';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { HttpExceptionFilter } from './core/filter/http-exception/http-exception.filter';
+import { HttpExceptionFilter } from './core/filter/exception/http.filter';
 import { AuthModule } from './auth/auth.module';
 import { LoadAppConfig } from './utils/load_config';
 import { AppDbConfig, AppHttpConfig } from './entity/config';
@@ -34,6 +34,9 @@ import { DebugClientEntity } from './debug_client/debug_client.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 import { ChatLogEntity } from './chat_server/chat_Log.entity';
+import { ChatSocketExcepionFilter } from './core/filter/exception/socket.filter';
+import { ChatRoomModule } from './chat_room/chat_room.module';
+import { ChatRoomEntity } from './chat_room/chat_room.entity';
 
 @Module({
   imports: [
@@ -95,7 +98,16 @@ import { ChatLogEntity } from './chat_server/chat_Log.entity';
         return {
           name: 'test-crash',
           type: 'mysql', // 数据库类型
-          entities: [UserEntity, PowerEntity, RoleEntity, MenuEntity, MyLogEntity, DebugClientEntity, ChatLogEntity], // 数据表实体
+          entities: [
+            UserEntity,
+            PowerEntity,
+            RoleEntity,
+            MenuEntity,
+            MyLogEntity,
+            DebugClientEntity,
+            ChatLogEntity,
+            ChatRoomEntity,
+          ], // 数据表实体
           host: appconfig.host, // 主机，默认为localhost
           port: appconfig.port, // 端口号
           username: appconfig.user, // 用户名
@@ -114,6 +126,7 @@ import { ChatLogEntity } from './chat_server/chat_Log.entity';
     MenuModule,
     AuthModule,
     RedisModule,
+    ChatRoomModule,
     TypeormLogModule,
     ChatServerModule,
     DebugServerModule,
@@ -124,6 +137,7 @@ import { ChatLogEntity } from './chat_server/chat_Log.entity';
   providers: [
     AppService,
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    { provide: APP_FILTER, useClass: ChatSocketExcepionFilter },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],

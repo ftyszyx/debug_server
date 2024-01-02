@@ -28,7 +28,6 @@ export class RoleController {
   @Post('add')
   @PowerCode({ module: ModuleType.Role, code: PowerCodeType.Add })
   async add(@Body() user: RoleEntity) {
-    console.log('user add ');
     return await this.roleService.addOne(user);
   }
   @Post('up')

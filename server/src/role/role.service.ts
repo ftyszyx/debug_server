@@ -40,7 +40,6 @@ export class RoleService extends BaseCrudService<RoleEntity> {
   }
 
   private async upRolesArrayPropertyByKey(item_key: string, item_value: number, role_ids: number[]) {
-    console.log('change', item_key, item_value, role_ids);
     const allroles = await this.repository.createQueryBuilder().getMany();
     const item_value_str = item_value.toString();
     for (let i = 0; i < allroles.length; i++) {
@@ -61,7 +60,6 @@ export class RoleService extends BaseCrudService<RoleEntity> {
           continue;
         }
       }
-      console.log('change role', item.id, str_list);
       await this.repository
         .createQueryBuilder()
         .update(RoleEntity)
@@ -107,12 +105,10 @@ export class RoleService extends BaseCrudService<RoleEntity> {
           all_power_res.forEach((item) => {
             all_power.push(item.id);
           });
-          // console.log('get allmenu:', all_menu_res, all_power_res, all_menu, all_power);
         }
         info.menus = all_menu;
         info.powers = all_power;
       }
     }
-    // console.log('get res:', items);
   }
 }
