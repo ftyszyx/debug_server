@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50710
 File Encoding         : 65001
 
-Date: 2023-12-26 18:40:53
+Date: 2024-01-02 18:39:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,16 +24,34 @@ CREATE TABLE `chat_log` (
   `text` text NOT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `from_user` varchar(255) NOT NULL DEFAULT '',
-  `to_users` text NOT NULL,
-  `to_user` varchar(255) NOT NULL DEFAULT '',
+  `room_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `from_user` (`from_user`),
-  KEY `to_user` (`to_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  KEY `room_id` (`room_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of chat_log
 -- ----------------------------
+INSERT INTO `chat_log` VALUES ('32', '\0\0\0\0\0\0\0\0\0\0\0', '2024-01-02 16:28:34', 'fc98f7deeb5763e8d7023dace124649cc0ca20fe', '0');
+
+-- ----------------------------
+-- Table structure for chat_room
+-- ----------------------------
+DROP TABLE IF EXISTS `chat_room`;
+CREATE TABLE `chat_room` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `users` text NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of chat_room
+-- ----------------------------
+INSERT INTO `chat_room` VALUES ('1', '1,fc98f7deeb5763e8d7023dace124649cc0ca20fe', '2024-01-02 17:13:41', '1-fc98f7deeb5763e8d7023dace124649cc0ca20fe');
 
 -- ----------------------------
 -- Table structure for debug_client
@@ -88,7 +106,7 @@ CREATE TABLE `menu` (
   `parent` varchar(255) NOT NULL,
   `url` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of menu
