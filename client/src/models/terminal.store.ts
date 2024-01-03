@@ -8,13 +8,14 @@ export interface TerminalInfo {
 export interface TerminalStoreType {
   items: TerminalInfo[];
   addItem: (info: TerminalInfo) => void;
-  removeItem: (info: TerminalInfo) => void;
+  removeItem: (room_id: number) => void;
 }
 
 export const useTerminalStore = create<TerminalStoreType>((set, get) => {
   let ret: TerminalStoreType = {
     items: [],
     addItem(info) {
+      console.log("add item", info);
       let allitems = get().items;
       if (allitems.findIndex((x) => x.room.id == info.room.id) >= 0) return;
       set((state) => {
@@ -22,9 +23,10 @@ export const useTerminalStore = create<TerminalStoreType>((set, get) => {
         return { ...state };
       });
     },
-    removeItem(info) {
+    removeItem(room_id) {
       set((state) => {
-        const findindx = state.items.findIndex((value) => value.room.id == info.room.id);
+        const findindx = state.items.findIndex((value) => value.room.id == room_id);
+        console.log("find index", findindx, state.items.splice(findindx, 1));
         if (findindx >= 0) return { ...state, items: state.items.splice(findindx, 1) };
         return state;
       });

@@ -13,7 +13,7 @@ import { MyFetchPost } from "@/util/fetch";
 import { ApiPath } from "@/entity/api_path";
 import { SocketIoMessageType, WebClientReq, WebClientResp } from "@/entity/socketio.entity";
 import { DebugClient } from "@/entity/debug_client.entity";
-import { IdReq, IdsReq } from "@/entity/api.entity";
+import { IdReq } from "@/entity/api.entity";
 export default function DebugTerminal() {
   const userstore = UseUserStore() as UserStore;
   const logStore = useChatStore() as ChatLogStoreType;
@@ -22,8 +22,8 @@ export default function DebugTerminal() {
   const [loading, setLoading] = useState(false);
   const [roominfo, setRoominfo] = useState<ChatRoom>();
   const [clientInfo, setClientInfo] = useState<DebugClient>();
-  const terminalStore = useTerminalStore() as TerminalStoreType;
-  console.log("roomid", client_id);
+  const terminalStore_add = useTerminalStore((state) => state!.addItem) as TerminalStoreType["addItem"];
+  console.log("target_num", client_id);
   useEffect(() => {
     socketService.connectWithAuthToken();
     return () => {
@@ -31,7 +31,7 @@ export default function DebugTerminal() {
     };
   }, []);
   function onJoinOk(data: ChatRoom) {
-    console.log("get join resp", data);
+    console.log("get join resp", data, clientInfo);
     if (clientInfo != null) {
       if (data.users.indexOf(clientInfo.guid) >= 0) {
         console.log("get room", data);
@@ -39,7 +39,7 @@ export default function DebugTerminal() {
       }
     }
     const terminal_info: TerminalInfo = { room: data };
-    terminalStore.addItem(terminal_info);
+    terminalStore_add(terminal_info);
   }
   useEffect(() => {
     socketService.addListener(SocketIoMessageType.Join_room_resp, onJoinOk);
@@ -62,6 +62,7 @@ export default function DebugTerminal() {
       setLoading(true);
       const guid_num = parseInt(guid);
       const client_res = await MyFetchPost<DebugClient, IdReq>(ApiPath.getDebugClientById, { id: guid_num });
+      console.log("get client ", client_res);
       setClientInfo(client_res);
       socketService.joinRoom({ guid: client_res.guid });
     } finally {
@@ -76,12 +77,13 @@ export default function DebugTerminal() {
   }
   return (
     <div className="flex bg-dark text-gray-100">
-      <ChatSideBar></ChatSideBar>
+      <ChatSideBar cur_clientInfo={clientInfo} cur_room={roominfo}></ChatSideBar>
       <div className="flex h-screen flex-grow flex-col items-stretch">
         <ChatHedaer client={roominfo}></ChatHedaer>
         <ChatView client={roominfo} inputOffset={16}></ChatView>
         <ChatInput
           onSendMessage={(data) => {
+            console.log("send data1", data, roominfo);
             if (roominfo) {
               const user_id = userstore.user_base!.id;
               let guid = "";
@@ -96,6 +98,7 @@ export default function DebugTerminal() {
                 room_id: roominfo?.id,
                 client_guid: guid,
               });
+              console.log("send data2", req_data);
               socketService.sendMessage(SocketIoMessageType.Debug_cmd_req, req_data);
             }
           }}

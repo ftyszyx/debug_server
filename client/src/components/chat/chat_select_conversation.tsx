@@ -1,5 +1,4 @@
 import { ClientStore, useDebugClientStore } from "@/models/client.store";
-import { TerminalInfo, TerminalStoreType, useTerminalStore } from "@/models/terminal.store";
 import { useEffect, useState } from "react";
 import { useHistory } from "kl_router";
 import { PagePath } from "@/entity/api_path";
@@ -14,7 +13,7 @@ export default function ChatSelectConversation(props: ChatSelectConversationProp
 
   const [selected, setSelected] = useState<string[]>([]);
   useEffect(() => {
-    useClientsStore.FetchAll();
+    useClientsStore.FetchAll(true);
   }, []);
   const handleToggle = (uid: string) => {
     if (selected.includes(uid)) {
@@ -24,16 +23,19 @@ export default function ChatSelectConversation(props: ChatSelectConversationProp
     }
   };
   const handleCreateConversation = () => {
+    console.log("selected", selected);
     if (selected.length <= 0) return;
     let goto_url = "";
     for (let i = 0; i < selected.length; i++) {
       const clientinfo = useClientsStore.items.find((x) => x.guid == selected[i]);
+      console.log("selected", clientinfo);
       if (clientinfo != null) {
         if (goto_url == "") {
           goto_url = `${PagePath.DebugTerminal}/${clientinfo.id}`;
         }
       }
     }
+    console.log("goto_url", goto_url);
     if (goto_url != "") {
       props.onClose();
       history.push(goto_url);

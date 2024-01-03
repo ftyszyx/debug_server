@@ -87,7 +87,7 @@ export class ChatServerGateWay
     this.myLogger.log(`join room req: ${JSON.stringify(req)}`, LogTagName);
     const res = await this.chat_room.AddOneRoom(room_name, [user.id.toString(), req.guid]);
     client.join(res.id.toString());
-    client.send(SocketIoMessageType.Join_room_resp, res);
+    client.emit(SocketIoMessageType.Join_room_resp, res);
   }
 
   @SubscribeMessage(SocketIoMessageType.leave_room)
