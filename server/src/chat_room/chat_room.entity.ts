@@ -14,6 +14,9 @@ export class ChatRoomEntity {
   @Index('name', { unique: true })
   name: string;
 
+  @Column({ length: 255 })
+  nick: string;
+
   @Column('simple-array')
   users: string[];
 

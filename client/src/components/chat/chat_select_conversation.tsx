@@ -23,19 +23,16 @@ export default function ChatSelectConversation(props: ChatSelectConversationProp
     }
   };
   const handleCreateConversation = () => {
-    console.log("selected", selected);
     if (selected.length <= 0) return;
     let goto_url = "";
     for (let i = 0; i < selected.length; i++) {
       const clientinfo = useClientsStore.items.find((x) => x.guid == selected[i]);
-      console.log("selected", clientinfo);
       if (clientinfo != null) {
         if (goto_url == "") {
           goto_url = `${PagePath.DebugTerminal}/${clientinfo.id}`;
         }
       }
     }
-    console.log("goto_url", goto_url);
     if (goto_url != "") {
       props.onClose();
       history.push(goto_url);
@@ -44,7 +41,7 @@ export default function ChatSelectConversation(props: ChatSelectConversationProp
   return (
     <div
       onClick={() => props.onClose()}
-      className="fixed top-0 left-0 z-20 flex h-full w-full items-center justify-center bg-[#00000080]"
+      className="fixed top-0 left-0 z-20 flex h-full w-full items-center justify-center bg-[#00000080] text-white"
     >
       <div onClick={(e) => e.stopPropagation()} className="bg-dark mx-3 w-full max-w-[500px] overflow-hidden rounded-lg">
         <div className="border-dark-lighten flex items-center justify-between border-b py-3 px-3">

@@ -81,11 +81,12 @@ export class ChatServerGateWay
   }
   @SubscribeMessage(SocketIoMessageType.Join_room)
   async handleJoin(client: Socket, req: JoinRoomReq) {
+    this.myLogger.log(`join room req1: ${JSON.stringify(req)}`, LogTagName);
     const user = this.getUserBase(client);
     if (user == null) return;
     const room_name = `${user.id}-${req.guid}`;
     this.myLogger.log(`join room req: ${JSON.stringify(req)}`, LogTagName);
-    const res = await this.chat_room.AddOneRoom(room_name, [user.id.toString(), req.guid]);
+    const res = await this.chat_room.AddOneRoom(room_name, req.nick, [user.id.toString(), req.guid]);
     client.join(res.id.toString());
     client.emit(SocketIoMessageType.Join_room_resp, res);
   }

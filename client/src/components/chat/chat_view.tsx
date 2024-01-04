@@ -20,19 +20,27 @@ export default function ChatView(props: ChatViewProps) {
     }
   }, [props.client]);
   const curLogInfo = useMemo(() => {
+    console.log("get curlog");
     if (props.client) {
       return chatLogStore.getLogsByGuid(props.client?.id);
     }
   }, [useChatStore, props.client]);
+  useEffect(() => {
+    console.log("cur log", curLogInfo);
+  }, [curLogInfo]);
+  console.log("have more", curLogInfo ? curLogInfo.logs.length < curLogInfo.total : false);
+
   return (
     <InfiniteScroll
+      inverse
       dataLength={curLogInfo?.total || 0}
       next={() => {
+        console.log("get next");
         if (props.client) {
+          console.log("get next2");
           chatLogStore.getMore(props.client?.id, false);
         }
       }}
-      inverse
       hasMore={curLogInfo ? curLogInfo.logs.length < curLogInfo.total : false}
       loader={<div className="flex justify-center py-3">loading..</div>}
       style={{ display: "flex", flexDirection: "column-reverse" }}
@@ -40,8 +48,16 @@ export default function ChatView(props: ChatViewProps) {
     >
       <div className="flex flex-col items-stretch gap-3 pt-10 pb-1">
         {curLogInfo &&
+          props.client &&
           curLogInfo.logs.map((item) => {
-            return <ChatMessage message={item} leftOrRight={item.from_user == userstore.user_base?.id.toString()}></ChatMessage>;
+            return (
+              <ChatMessage
+                key={item.id.toString()}
+                client_name={props.client!.nick}
+                message={item}
+                leftOrRight={item.from_user == userstore.user_base?.id.toString()}
+              ></ChatMessage>
+            );
           })}
         <div ref={scrollBottomRef}></div>
       </div>

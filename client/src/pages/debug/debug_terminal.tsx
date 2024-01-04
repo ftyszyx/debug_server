@@ -6,15 +6,16 @@ import ChatInput from "@/components/chat/chat_input";
 import { useEffect, useState } from "react";
 import { MenuParamNull } from "@/config";
 import { ChatLogStoreType, TerminalInfo, TerminalStoreType, UseUserStore, useChatStore, useTerminalStore } from "@/models";
-import { socketService } from "@/service/socketService";
+import { SocketIOServiceStore, useSocketIOStore } from "@/models/socket_io.store";
 import { UserStore } from "@/entity/user.entity";
-import { ChatRoom, GetChatRoomReq } from "@/entity/chat_room.entity";
+import { ChatRoom } from "@/entity/chat_room.entity";
 import { MyFetchPost } from "@/util/fetch";
 import { ApiPath } from "@/entity/api_path";
 import { SocketIoMessageType, WebClientReq, WebClientResp } from "@/entity/socketio.entity";
 import { DebugClient } from "@/entity/debug_client.entity";
 import { IdReq } from "@/entity/api.entity";
 export default function DebugTerminal() {
+  const socketStore = useSocketIOStore() as SocketIOServiceStore;
   const userstore = UseUserStore() as UserStore;
   const logStore = useChatStore() as ChatLogStoreType;
   const route_data = useRouterStore();
@@ -23,62 +24,57 @@ export default function DebugTerminal() {
   const [roominfo, setRoominfo] = useState<ChatRoom>();
   const [clientInfo, setClientInfo] = useState<DebugClient>();
   const terminalStore_add = useTerminalStore((state) => state!.addItem) as TerminalStoreType["addItem"];
-  console.log("target_num", client_id);
+  console.log("render terminal target_client", client_id, "loading", loading, "roominfo", roominfo);
   useEffect(() => {
-    socketService.connectWithAuthToken();
+    socketStore.connect();
     return () => {
-      socketService.disconnect();
+      socketStore.disconnect();
     };
   }, []);
   function onJoinOk(data: ChatRoom) {
-    console.log("get join resp", data, clientInfo);
-    if (clientInfo != null) {
-      if (data.users.indexOf(clientInfo.guid) >= 0) {
-        console.log("get room", data);
-        setRoominfo(data);
-      }
-    }
+    console.log("join ok", data);
+    setRoominfo(data);
     const terminal_info: TerminalInfo = { room: data };
     terminalStore_add(terminal_info);
   }
   useEffect(() => {
-    socketService.addListener(SocketIoMessageType.Join_room_resp, onJoinOk);
-    socketService.addListener(SocketIoMessageType.Debug_cmd_rep, onGetMessage);
+    socketStore.addListener(SocketIoMessageType.Join_room_resp, onJoinOk);
+    socketStore.addListener(SocketIoMessageType.Debug_cmd_rep, onGetMessage);
     return () => {
-      socketService.removeListener(SocketIoMessageType.Debug_cmd_rep, onJoinOk);
-      socketService.removeListener(SocketIoMessageType.Debug_cmd_rep, onGetMessage);
+      socketStore.removeListener(SocketIoMessageType.Debug_cmd_rep, onJoinOk);
+      socketStore.removeListener(SocketIoMessageType.Debug_cmd_rep, onGetMessage);
     };
-  });
+  }, []);
+
   useEffect(() => {
-    if (client_id && client_id != MenuParamNull && socketService.isconnected) {
+    if (client_id && client_id != MenuParamNull && socketStore.isConnected) {
       getRoomInfo(client_id);
+    } else {
+      setRoominfo(undefined);
     }
-  }, [client_id, socketService.isconnected]);
-  useEffect(() => {
-    setLoading(socketService.isconnected == false);
-  }, [socketService.isconnected]);
+  }, [client_id, socketStore.isConnected]);
+
   async function getRoomInfo(guid: string) {
     try {
+      console.log("join room", guid);
       setLoading(true);
       const guid_num = parseInt(guid);
       const client_res = await MyFetchPost<DebugClient, IdReq>(ApiPath.getDebugClientById, { id: guid_num });
-      console.log("get client ", client_res);
       setClientInfo(client_res);
-      socketService.joinRoom({ guid: client_res.guid });
+      socketStore.joinRoom({ guid: client_res.guid, nick: client_res.name });
     } finally {
       setLoading(false);
     }
   }
   function onGetMessage(data: WebClientResp) {
-    console.log("get data", data);
     if (roominfo) {
       logStore.getMore(roominfo.id, true);
     }
   }
   return (
-    <div className="flex bg-dark text-gray-100">
+    <div className="flex bg-gray-100 text-base w-full h-full">
       <ChatSideBar cur_clientInfo={clientInfo} cur_room={roominfo}></ChatSideBar>
-      <div className="flex h-screen flex-grow flex-col items-stretch">
+      <div className="flex w-full flex-grow flex-col items-stretch">
         <ChatHedaer client={roominfo}></ChatHedaer>
         <ChatView client={roominfo} inputOffset={16}></ChatView>
         <ChatInput
@@ -99,10 +95,10 @@ export default function DebugTerminal() {
                 client_guid: guid,
               });
               console.log("send data2", req_data);
-              socketService.sendMessage(SocketIoMessageType.Debug_cmd_req, req_data);
+              socketStore.sendMessage(SocketIoMessageType.Debug_cmd_req, req_data);
             }
           }}
-          disabled={roominfo != null && roominfo != undefined && loading == false}
+          disabled={roominfo == undefined || loading || socketStore.isConnected == false}
         ></ChatInput>
       </div>
     </div>

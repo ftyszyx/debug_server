@@ -75,6 +75,7 @@ export interface chatLogErr {
 }
 export interface JoinRoomReq {
   guid: string;
+  nick: string;
 }
 
 export interface JoinRoomResp {

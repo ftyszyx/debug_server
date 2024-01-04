@@ -7,6 +7,7 @@ import { create } from "kl_state";
 export interface ChatConverSationType {
   room_id: number;
   logs: ChatLog[];
+  logsDic: Map<number, ChatLog>;
   total: number;
   old_time: string;
   new_time: string;
@@ -16,10 +17,14 @@ export interface ChatLogStoreType {
   conversation_map: Map<number, ChatConverSationType>;
   getMore: (roomid: number, forece_new?: boolean) => Promise<void>;
   getLogsByGuid: (roomid: number) => ChatConverSationType;
-  addMessage: (roomid: number, log: ChatLog) => void;
 }
 
 export const useChatStore = create<ChatLogStoreType>((set, get) => {
+  function addLog(roomInfo: ChatConverSationType, logitem: ChatLog) {
+    if (roomInfo.logsDic.has(logitem.id)) return;
+    roomInfo.logs.push(logitem);
+    roomInfo.logsDic.set(logitem.id, logitem);
+  }
   let ret: ChatLogStoreType = {
     conversation_map: new Map<number, ChatConverSationType>(),
     conversations: [],
@@ -28,6 +33,7 @@ export const useChatStore = create<ChatLogStoreType>((set, get) => {
         const info: ChatConverSationType = {
           room_id,
           logs: [],
+          logsDic: new Map<number, ChatLog>(),
           old_time: "",
           new_time: "",
           total: 0,
@@ -41,11 +47,12 @@ export const useChatStore = create<ChatLogStoreType>((set, get) => {
     },
 
     async getMore(room_id: number, forece_new = false) {
+      console.log("get more", room_id, forece_new);
       const info = get().getLogsByGuid(room_id);
       const req_data: ChatLogMoreReq = {
         end_time: info.old_time,
         start_time: "",
-        num: 20,
+        num: 10,
         room_id,
       };
       if (forece_new) {
@@ -53,33 +60,21 @@ export const useChatStore = create<ChatLogStoreType>((set, get) => {
         req_data.start_time = info.new_time;
       }
       const res = await MyFetchPost<ChatLogMoreResp, ChatLogMoreReq>(ApiPath.getChatLogMore, req_data);
+      console.log("get more res", res);
       res.logs.forEach((item) => {
-        info.logs.push(item);
+        addLog(info, item);
       });
+      console.log("get more logs", info.logs);
       info.total = res.total;
       info.logs.sort((a, b) => {
-        const timea = Date.parse(a.create_time);
-        const timeb = Date.parse(b.create_time);
-        return timeb - timea;
+        // const timea = Date.parse(a.create_time);
+        // const timeb = Date.parse(b.create_time);
+        // return timea - timeb;
+        return a.id - b.id;
       });
       if (info.logs.length > 0) {
         info.old_time = info.logs[info.logs.length - 1].create_time;
         info.new_time = info.logs[0].create_time;
-      }
-      set((state) => {
-        return { ...state };
-      });
-    },
-
-    addMessage(room_id, log) {
-      const info = get().getLogsByGuid(room_id);
-      if (info.new_time == "") {
-        info.logs.push(log);
-      } else {
-        const time_new = Date.parse(info.new_time);
-        const add_tiem = Date.parse(log.create_time);
-        if (add_tiem < time_new) return;
-        info.logs.push(log);
       }
       set((state) => {
         return { ...state };

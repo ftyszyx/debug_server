@@ -19,10 +19,10 @@ export class ChatRoomService extends BaseCrudService<ChatRoomEntity> {
     return await this.getOneWithCache('name', name);
   }
 
-  async AddOneRoom(name: string, userlist: string[]) {
+  async AddOneRoom(name: string, nick: string, userlist: string[]) {
     const oldroom = await this.getOneByRoomKey(name);
     if (oldroom == null) {
-      return await this.addOne({ users: userlist, name });
+      return await this.addOne({ users: userlist, name, nick });
     } else {
       return oldroom;
     }
