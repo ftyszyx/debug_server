@@ -24,6 +24,9 @@ export class ChatRoomService extends BaseCrudService<ChatRoomEntity> {
     if (oldroom == null) {
       return await this.addOne({ users: userlist, name, nick });
     } else {
+      if (oldroom.nick != nick) {
+        return await this.updateById(oldroom.id, { nick });
+      }
       return oldroom;
     }
   }

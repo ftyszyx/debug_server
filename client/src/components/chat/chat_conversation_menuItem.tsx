@@ -10,7 +10,6 @@ interface ChatConversationMenuItemProps {
   my_client?: DebugClient;
 }
 export default function ChatConversationMenuItem(props: ChatConversationMenuItemProps) {
-  console.log("render chat menu item", props);
   const terminalStore_del = useTerminalStore((state) => state!.removeItem) as TerminalStoreType["removeItem"];
   return (
     props.my_client && (

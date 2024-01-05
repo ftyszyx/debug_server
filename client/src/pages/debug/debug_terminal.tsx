@@ -67,6 +67,7 @@ export default function DebugTerminal() {
     }
   }
   function onGetMessage(data: WebClientResp) {
+    console.log("on get message", data);
     if (roominfo) {
       logStore.getMore(roominfo.id, true);
     }
@@ -79,7 +80,6 @@ export default function DebugTerminal() {
         <ChatView client={roominfo} inputOffset={16}></ChatView>
         <ChatInput
           onSendMessage={(data) => {
-            console.log("send data1", data, roominfo);
             if (roominfo) {
               const user_id = userstore.user_base!.id;
               let guid = "";
@@ -94,7 +94,6 @@ export default function DebugTerminal() {
                 room_id: roominfo?.id,
                 client_guid: guid,
               });
-              console.log("send data2", req_data);
               socketStore.sendMessage(SocketIoMessageType.Debug_cmd_req, req_data);
             }
           }}
