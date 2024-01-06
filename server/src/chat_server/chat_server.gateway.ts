@@ -131,15 +131,14 @@ export class ChatServerGateWay
     const res: ChatLogMoreResp = { logs: [], total: 0 };
     res.total = await qb.getCount();
     qb.where('chat_log.room_id= :id1', { id1: req.room_id });
-    if (req.start_time != '') {
-      qb.andWhere('chat_log.create_time >:time', { time: req.start_time });
+    if (req.target_id != 0) {
+      if (req.new_or_old) qb.andWhere('chat_log.id>:target_id', { target_id: req.target_id });
+      else qb.andWhere('chat_log.id<:target_id', { target_id: req.target_id });
     }
-    if (req.end_time != '') {
-      qb.andWhere('chat_log.create_time <:time', { time: req.end_time });
-    }
-    qb.orderBy('chat_log.create_time', 'DESC');
-    qb.limit(req.num);
+    qb.orderBy('chat_log.id', 'DESC');
+    qb.limit(req.limit_num);
     res.logs = await qb.getMany();
+    // console.log('get logs', res.logs);
     return res;
   }
 }

@@ -1,5 +1,5 @@
 //参考：https://github.com/ankeetmaini/react-infinite-scroll-component/tree/master
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { ThresholdUnits, parseThreshold } from "./thread_hold";
 import { throttle } from "throttle-debounce";
 
@@ -21,12 +21,12 @@ interface InfiniteScrollProps {
 }
 
 export default function InfiniteScroll(props: InfiniteScrollProps) {
-  console.log("infinite scroll render", props.dataLength);
+  // console.log("infinite scroll render", props.dataLength);
   const list_ref = useRef(null);
+  const propsRef = useRef(props);
   const scroll_ref = useRef<HTMLElement | null>(null);
   const [showLoader, setShowLoader] = useState(false);
   const actionTriggered = useRef(false);
-  const throttledOnScrollListener = useRef<(event: MouseEvent) => void>();
   const getScrollableTarget = () => {
     if (props.scrollableTarget instanceof HTMLElement) return props.scrollableTarget;
     if (typeof props.scrollableTarget === "string") {
@@ -39,7 +39,9 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
     return null;
   };
   useEffect(() => {
-    console.log("reset state");
+    propsRef.current = { ...props };
+  }, [props]);
+  useEffect(() => {
     actionTriggered.current = false;
     setShowLoader(false);
   }, [props.dataLength]);
@@ -48,9 +50,9 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
     const clientHeight =
       target === document.body || target === document.documentElement ? window.screen.availHeight : target.clientHeight;
     const threshold = parseThreshold(scrollThreshold);
-    console.log(
-      `top:${target.scrollTop} clienth:${clientHeight} threshold:${threshold.value} unit:${threshold.unit} scrollheight:${target.scrollHeight}`
-    );
+    // console.log(
+    //   `top:${target.scrollTop} clienth:${clientHeight} threshold:${threshold.value} unit:${threshold.unit} scrollheight:${target.scrollHeight}`
+    // );
     if (threshold.unit === ThresholdUnits.Pixel) {
       return target.scrollTop <= threshold.value + 1;
     }
@@ -58,20 +60,19 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
     return target.scrollTop < max_top + 1;
   }
 
-  function isElementAtBottom(target: HTMLElement, scrollThreshold: string | number = 0.8) {
+  function isElementAtBottom(target: HTMLElement, scrollThreshold: string | number = 0.2) {
     const clientHeight =
       target === document.body || target === document.documentElement ? window.screen.availHeight : target.clientHeight;
-
     const threshold = parseThreshold(scrollThreshold);
-
     if (threshold.unit === ThresholdUnits.Pixel) {
-      return target.scrollTop + clientHeight >= target.scrollHeight - threshold.value;
+      return target.scrollHeight - target.scrollTop - clientHeight <= threshold.value;
     }
-
-    return target.scrollTop + clientHeight >= (threshold.value / 100) * target.scrollHeight;
+    const max_bottom = (threshold.value / 100) * target.scrollHeight;
+    return target.scrollHeight - target.scrollTop - clientHeight <= max_bottom;
   }
 
-  const onScrollListener = (event: MouseEvent) => {
+  const onScrollListener = useCallback((event: MouseEvent) => {
+    const props = propsRef.current;
     if (typeof props.onScroll === "function") {
       // Execute this callback in next tick so that it does not affect the
       // functionality of the library.
@@ -86,7 +87,7 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
         ? isElementAtTop(target, props.scrollThreshold)
         : isElementAtBottom(target, props.scrollThreshold);
 
-      console.log("scroll at bottom", atBottom, "has more", props.hasMore);
+      // console.log("scroll at bottom", atBottom, "has more", props.hasMore);
       // call the `next` function in the props to trigger the next data fetch
       if (atBottom && props.hasMore) {
         actionTriggered.current = true;
@@ -94,9 +95,8 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
         props.next && props.next();
       }
     }
-  };
+  }, []);
   useEffect(() => {
-    throttledOnScrollListener.current = throttle(150, onScrollListener);
     if (typeof props.dataLength === "undefined") {
       throw new Error(
         `mandatory prop "dataLength" is missing. The prop is needed` + ` when loading more content. Check README.md for usage`
@@ -104,10 +104,6 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
     }
     let _scrollableNode = getScrollableTarget();
     scroll_ref.current = props.height ? list_ref.current : _scrollableNode;
-    if (scroll_ref.current) {
-      console.log("add scroll listener", scroll_ref.current);
-      scroll_ref.current.addEventListener("scroll", throttledOnScrollListener.current as EventListenerOrEventListenerObject);
-    }
     if (
       typeof props.initialScrollY === "number" &&
       scroll_ref.current &&
@@ -116,10 +112,19 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
     ) {
       scroll_ref.current.scrollTo(0, props.initialScrollY);
     }
+  }, []);
+  useEffect(() => {
+    const throttle_listener = throttle(150, onScrollListener) as (
+      event: MouseEvent
+    ) => void as EventListenerOrEventListenerObject;
+    if (scroll_ref.current) {
+      // console.log("add scroll listener", scroll_ref.current);
+      scroll_ref.current.addEventListener("scroll", throttle_listener);
+    }
     return () => {
       if (scroll_ref.current) {
-        console.log("render infite scroll destory", scroll_ref.current);
-        scroll_ref.current.removeEventListener("scroll", throttledOnScrollListener.current as EventListenerOrEventListenerObject);
+        // console.log("render infite scroll destory", scroll_ref.current);
+        scroll_ref.current.removeEventListener("scroll", throttle_listener);
       }
     };
   }, []);
@@ -129,8 +134,8 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
         {props.inverse && showLoader && props.hasMore && props.loader}
         {props.inverse && !props.hasMore && props.endMessage}
         {props.children}
-        {showLoader && props.hasMore && props.loader}
-        {!props.hasMore && props.endMessage}
+        {!props.inverse && showLoader && props.hasMore && props.loader}
+        {!props.inverse && !props.hasMore && props.endMessage}
       </div>
     </div>
   );

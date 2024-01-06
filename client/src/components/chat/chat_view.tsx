@@ -1,60 +1,70 @@
 import { UserStore } from "@/entity/user.entity";
 import { ChatLogStoreType, UseUserStore, useChatStore } from "@/models";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ChatMessage from "./chat_message";
 import { ChatRoom } from "@/entity/chat_room.entity";
 
 import InfiniteScroll from "@/components/scroll/infinite_scroll";
+import { log } from "console";
 interface ChatViewProps {
   client?: ChatRoom;
   inputOffset: number;
 }
 export default function ChatView(props: ChatViewProps) {
-  console.log("render chatview", props);
   const chatLogStore = useChatStore() as ChatLogStoreType;
   const userstore = UseUserStore() as UserStore;
+  const [roominfo, setRoominfo] = useState<ChatRoom>();
   const scrollBottomRef = useRef<HTMLDivElement>(null);
-  // const isWindowFocus = useRef(true);
   useEffect(() => {
-    if (props.client) {
-      chatLogStore.getMore(props.client.id, true);
+    if (roominfo) {
+      chatLogStore.getMore(roominfo.id, true);
     }
+  }, [roominfo]);
+  useEffect(() => {
+    setRoominfo(props.client);
   }, [props.client]);
   const curLogInfo = useMemo(() => {
-    console.log("get curlog");
-    if (props.client) {
-      return chatLogStore.getLogsByGuid(props.client?.id);
+    if (roominfo) {
+      return chatLogStore.getLogsByRoomid(roominfo.id);
     }
-  }, [useChatStore, props.client]);
-  useEffect(() => {
-    console.log("cur log", curLogInfo);
-  }, [curLogInfo]);
-
-  console.log(
-    "have more",
-    curLogInfo?.logs.length,
-    curLogInfo?.total,
-    curLogInfo ? curLogInfo.logs.length < curLogInfo.total : false
-  );
-
-  const getMore = () => {
-    console.log("get next", props.client);
-    if (props.client) {
-      console.log("get next2");
-      chatLogStore.getMore(props.client?.id, false);
-    }
+  }, [useChatStore, roominfo]);
+  const moveToBottom = () => {
+    scrollBottomRef.current?.scrollIntoView();
+    // setTimeout(() => {
+    //   scrollBottomRef.current?.scrollIntoView();
+    // }, 100);
   };
+  const newLogId = useMemo(() => {
+    let logid = 0;
+    if (curLogInfo && curLogInfo.logs.length > 0) {
+      logid = curLogInfo.logs[curLogInfo.logs.length - 1].id;
+    }
+    return logid;
+  }, [curLogInfo, curLogInfo?.logs.length]);
+  useEffect(() => {
+    moveToBottom();
+  }, [newLogId]);
+
   return (
-    // <div id="scrolllabeldiv" className=" h-full">
     <InfiniteScroll
       inverse
       dataLength={curLogInfo?.logs.length || 0}
-      next={getMore}
-      hasMore={true}
-      loader={<div className="flex justify-center py-3">loading..</div>}
-      height={400}
-      endMessage="no more message"
-      // height={`calc(100vh - ${100 + props.inputOffset}px)`}
+      next={() => {
+        console.log("getmore next 1", roominfo);
+        if (roominfo) {
+          console.log("get next2");
+          chatLogStore.getMore(roominfo.id, false);
+        }
+      }}
+      hasMore={curLogInfo ? curLogInfo?.logs.length < curLogInfo?.total : false}
+      loader={<div className="flex justify-center py-3 text-red-500">加载中。。。</div>}
+      // height={200}
+      endMessage={
+        <div className="flex justify-center py-3 ">
+          <span className=" text-red-500">到顶了</span>
+        </div>
+      }
+      height={`calc(100vh - ${100 + props.inputOffset}px)`}
     >
       <div className="flex flex-col items-stretch gap-3 pt-10 pb-1">
         {curLogInfo &&
@@ -72,6 +82,5 @@ export default function ChatView(props: ChatViewProps) {
         <div ref={scrollBottomRef}></div>
       </div>
     </InfiniteScroll>
-    // </div>
   );
 }

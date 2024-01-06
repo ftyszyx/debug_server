@@ -70,9 +70,9 @@ export interface UpReq<T> {
   data: T;
 }
 export interface ChatLogMoreReq {
-  start_time: string;
-  end_time: string;
-  num: number;
+  target_id: number;
+  new_or_old: boolean;
+  limit_num: number;
   room_id: number;
 }
 

@@ -13,7 +13,6 @@ export interface SearchBarProps {
 export default function SearchBar(props: SearchBarProps) {
   const [form] = Form.useForm();
   const [expand, setExpand] = useState(true);
-  // console.log("render search bar");
   const searchFields = useMemo(() => {
     return props.fileds.filter((x) => x.field_operate & OperateCode.Search);
   }, props.fileds);

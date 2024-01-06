@@ -3,7 +3,7 @@ import ChatSideBar from "@/components/chat/chat_sidebar";
 import ChatHedaer from "@/components/chat/chat_header";
 import ChatView from "@/components/chat/chat_view";
 import ChatInput from "@/components/chat/chat_input";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { MenuParamNull } from "@/config";
 import { ChatLogStoreType, TerminalInfo, TerminalStoreType, UseUserStore, useChatStore, useTerminalStore } from "@/models";
 import { SocketIOServiceStore, useSocketIOStore } from "@/models/socket_io.store";
@@ -14,6 +14,10 @@ import { ApiPath } from "@/entity/api_path";
 import { SocketIoMessageType, WebClientReq, WebClientResp } from "@/entity/socketio.entity";
 import { DebugClient } from "@/entity/debug_client.entity";
 import { IdReq } from "@/entity/api.entity";
+
+interface TerminalStateInfo {
+  room?: ChatRoom;
+}
 export default function DebugTerminal() {
   const socketStore = useSocketIOStore() as SocketIOServiceStore;
   const userstore = UseUserStore() as UserStore;
@@ -23,20 +27,30 @@ export default function DebugTerminal() {
   const [loading, setLoading] = useState(false);
   const [roominfo, setRoominfo] = useState<ChatRoom>();
   const [clientInfo, setClientInfo] = useState<DebugClient>();
+  const stateInfoRef = useRef<TerminalStateInfo>({ room: roominfo });
   const terminalStore_add = useTerminalStore((state) => state!.addItem) as TerminalStoreType["addItem"];
-  console.log("render terminal target_client", client_id, "loading", loading, "roominfo", roominfo);
+  // console.log("render terminal target_client", client_id, "loading", loading, "roominfo", roominfo);
   useEffect(() => {
     socketStore.connect();
     return () => {
       socketStore.disconnect();
     };
   }, []);
-  function onJoinOk(data: ChatRoom) {
+  useEffect(() => {
+    stateInfoRef.current.room = roominfo;
+  }, [roominfo]);
+  const onJoinOk = useCallback((data: ChatRoom) => {
     console.log("join ok", data);
     setRoominfo(data);
     const terminal_info: TerminalInfo = { room: data };
     terminalStore_add(terminal_info);
-  }
+  }, []);
+  const onGetMessage = useCallback((data: WebClientResp) => {
+    console.log("on get message", data, roominfo);
+    if (stateInfoRef.current.room) {
+      logStore.getMore(stateInfoRef.current.room.id, true);
+    }
+  }, []);
   useEffect(() => {
     socketStore.addListener(SocketIoMessageType.Join_room_resp, onJoinOk);
     socketStore.addListener(SocketIoMessageType.Debug_cmd_rep, onGetMessage);
@@ -64,12 +78,6 @@ export default function DebugTerminal() {
       socketStore.joinRoom({ guid: client_res.guid, nick: client_res.name });
     } finally {
       setLoading(false);
-    }
-  }
-  function onGetMessage(data: WebClientResp) {
-    console.log("on get message", data);
-    if (roominfo) {
-      logStore.getMore(roominfo.id, true);
     }
   }
   return (
