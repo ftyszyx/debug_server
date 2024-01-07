@@ -44,9 +44,21 @@ is_connect(guid)
                 *(int*)(ptr + 4) = pack.from;
                 *(int*)(ptr + 8) = pack.to;
 ```
-   
-   
-   
+
+#无限scroll
+https://github.com/bvaughn/react-window
+https://github.com/bvaughn/react-window-infinite-loader/
+https://juejin.cn/post/7132277540806213645
+https://github.com/bvaughn/react-virtualized
+
+服务器部署参照：
+https://github.com/mattermost/mattermost
+docker run --name mattermost-preview -d --publish 8065:8065 mattermost/mattermost-preview
+
+https://github.com/kingToolbox/WindTerm
+
+https://www.bilibili.com/video/BV1YU4y1p7jG/?spm_id_from=333.337.search-card.all.click&vd_source=1cfe4f7c9bf04285f79b848e60f55aea
+
 ## author
 - Author - [yuxin.zhang]()
 
