@@ -3,7 +3,7 @@ import ChatSideBar from "@/components/chat/chat_sidebar";
 import ChatHedaer from "@/components/chat/chat_header";
 import ChatView from "@/components/chat/chat_view";
 import ChatInput from "@/components/chat/chat_input";
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MenuParamNull } from "@/config";
 import { ChatLogStoreType, TerminalInfo, TerminalStoreType, UseUserStore, useChatStore, useTerminalStore } from "@/models";
 import { SocketIOServiceStore, useSocketIOStore } from "@/models/socket_io.store";

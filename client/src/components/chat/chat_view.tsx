@@ -5,7 +5,6 @@ import ChatMessage from "./chat_message";
 import { ChatRoom } from "@/entity/chat_room.entity";
 
 import InfiniteScroll from "@/components/scroll/infinite_scroll";
-import { log } from "console";
 interface ChatViewProps {
   client?: ChatRoom;
   inputOffset: number;
