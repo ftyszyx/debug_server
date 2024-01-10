@@ -51,4 +51,5 @@ services:
 # 声明一下网桥
 # 重要：将所有服务都挂载在同一网桥即可通过容器名来互相通信了
 # 如nestjs连接mysql和redis，可以通过容器名来互相通信
-networks: debugserver_net
+networks:
+  debugserver_net:
