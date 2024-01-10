@@ -20,11 +20,11 @@ services:
       - 9005:3306
     restart: on-failure
     environment:
-      - MYSQL_DATABASE: debug_server
-      - MYSQL_ROOT_PASSWORD: 123456
-      - MYSQL_USER: debug_server
-      - MYSQL_PASSWORD: 123456
-      - MYSQL_ROOT_HOST: '%'
+      - MYSQL_DATABASE= debug_server
+      - MYSQL_ROOT_PASSWORD= 123456
+      - MYSQL_USER= debug_server
+      - MYSQL_PASSWORD= 123456
+      - MYSQL_ROOT_HOST= '%'
     volumes:
       - ./deploy/mysql/db:/var/lib/mysql # 用来存放了数据库表文件
       - ./deploy/mysql/conf/my.cnf:/etc/my.cnf # 存放自定义的配置文件
@@ -46,7 +46,7 @@ services:
     environment:
       - TZ=Asia/Shanghai # 解决容器 时区的问题
     networks:
-      - debugsever_net
+      - debugserver_net
 
 # 声明一下网桥
 # 重要：将所有服务都挂载在同一网桥即可通过容器名来互相通信了
