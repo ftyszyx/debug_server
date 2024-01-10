@@ -4,7 +4,7 @@ services:
     container_name: debug_server
     build:
       context: .
-      dockerfiel: Dockerfile
+      dockerfile: Dockerfile
     ports:
       - 9003:9003
       - 9004:9004
