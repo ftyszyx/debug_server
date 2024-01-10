@@ -1,0 +1,27 @@
+app:
+  password_init: '123456'
+http:
+  host: 'localhost'
+  port: 9003
+  token_secret_key: testdd
+  # token_expire_time: '4h'
+  #token 失效时间 单位毫秒
+  token_expire_in: 144000000
+
+debug_server:
+  host: localhost
+  port: 9004
+
+db:
+  host: mysql_debug_server
+  port: 9005
+  user: root
+  password: '123456'
+  database: debug_server
+
+redis:
+  host: redis_debug_server
+  port: 9006
+  db: 1
+  ttl: 3600
+  password: 123456

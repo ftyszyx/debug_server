@@ -1,0 +1,54 @@
+version: '3.9'
+services:
+  debug_server:
+    container_name: debug_server
+    build:
+      context: .
+      dockerfiel: Dockerfile
+    ports:
+      - 9003:9003
+      - 9004:9004
+    networks:
+      - debugserver_net
+    depends_on:
+      - redis_debug_server
+      - mysql_debug_server
+  mysql_debug_server:
+    container_name: mysql_debug_server
+    image: mysql:5.7
+    ports:
+      - 9005:3306
+    restart: on-failure
+    environment:
+      - MYSQL_DATABASE: debug_server
+      - MYSQL_ROOT_PASSWORD: 123456
+      - MYSQL_USER: debug_server
+      - MYSQL_PASSWORD: 123456
+      - MYSQL_ROOT_HOST: '%'
+    volumes:
+      - ./deploy/mysql/db:/var/lib/mysql # 用来存放了数据库表文件
+      - ./deploy/mysql/conf/my.cnf:/etc/my.cnf # 存放自定义的配置文件
+      # 我们在启动MySQL容器时自动创建我们需要的数据库和表
+      # mysql官方镜像中提供了容器启动时自动docker-entrypoint-initdb.d下的脚本的功能
+      - ./deploy/mysql/init:/docker-entrypoint-initdb.d/ # 存放初始化的脚本
+    networks:
+      - debugserver_net
+  redis_debug_server:
+    container_name: redis_debug_server
+    image: redis:5.0.14
+    ports:
+      - 9006:6379
+    restart: on-failure
+    volumes:
+      - ./deploy/redis/db:/data # 把持久化数据挂载到宿主机
+      - ./deploy/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf # 把redis的配置文件挂载到宿主机
+      - ./deploy/redis/logs:/logs # 用来存放日志
+    environment:
+      - TZ=Asia/Shanghai # 解决容器 时区的问题
+    networks:
+      - debugsever_net
+
+# 声明一下网桥
+# 重要：将所有服务都挂载在同一网桥即可通过容器名来互相通信了
+# 如nestjs连接mysql和redis，可以通过容器名来互相通信
+networks: debugserver_net
