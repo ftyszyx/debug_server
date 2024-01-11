@@ -8,7 +8,7 @@ export function LoadAppConfig() {
   const node_env = process.env.NODE_ENV;
   const config_path = path.resolve(`config/app.${node_env}.yaml`);
   if (!fs.existsSync(config_path)) {
-    throw new Error('缺少环境配置文件');
+    throw new Error(`缺少环境配置文件:${config_path}`);
   }
   return yaml.load(fs.readFileSync(config_path, 'utf8')) as AppConfig;
 }
