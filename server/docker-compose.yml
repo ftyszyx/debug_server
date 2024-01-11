@@ -40,8 +40,7 @@ services:
       - 9006:6379
     restart: on-failure
     volumes:
-      - ./deploy/redis/db:/data # 把持久化数据挂载到宿主机
-      - ./deploy/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf # 把redis的配置文件挂载到宿主机
+      - ./deploy/redis/config/redis.conf:/usr/local/etc/redis/redis.conf # 把redis的配置文件挂载到宿主机
       - ./deploy/redis/logs:/logs # 用来存放日志
     environment:
       - TZ=Asia/Shanghai # 解决容器 时区的问题
