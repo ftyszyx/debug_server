@@ -14,14 +14,14 @@ debug_server:
 
 db:
   host: mysql_debug_server
-  port: 9005
+  port: 3306
   user: root
   password: '123456'
   database: debug_server
 
 redis:
   host: redis_debug_server
-  port: 9006
+  port: 6379 
   db: 1
   ttl: 3600
   password: 123456

@@ -5,14 +5,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: on-failure
     ports:
       - 9003:9003
       - 9004:9004
     networks:
       - debugserver_net
+    tty: true
     depends_on:
       - redis_debug_server
       - mysql_debug_server
+    volumes: 
+     - ./deploy/server/logs:/user/src/app/logs
+     - ./deploy/server/config:/user/src/app/config
   mysql_debug_server:
     container_name: mysql_debug_server
     image: mysql:5.7
@@ -35,7 +40,7 @@ services:
       - debugserver_net
   redis_debug_server:
     container_name: redis_debug_server
-    image: redis:5.0.14
+    image: redis:5.0.14-alpine
     ports:
       - 9006:6379
     restart: on-failure
