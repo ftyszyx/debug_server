@@ -6,7 +6,7 @@ export interface RoleStore2 {
   getCheckBoxItems: () => EnumTypeItem[];
 }
 export type RoleStore = StoreBase<Role> & RoleStore2;
-export const useRoleStore = createStoreBase<Role, RoleStore2>(ApiPath.GetAllRoles, (set, get) => {
+export const useRoleStore = createStoreBase<Role, RoleStore2>(ApiPath.GetAllRoles, (_set, get) => {
   return {
     getCheckBoxItems: () => {
       var items = get().items.map((item) => {
