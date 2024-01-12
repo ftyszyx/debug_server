@@ -1,0 +1,1 @@
+ALTER USER 'debug_server'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
