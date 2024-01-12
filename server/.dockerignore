@@ -1,0 +1,10 @@
+*.md
+**/node_modules
+**/dist
+.git
+.gitingore
+test/
+Dockerfile
+deploy/
+docker-compose.yml
+config/

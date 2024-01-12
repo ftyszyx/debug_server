@@ -2,7 +2,7 @@ FROM node:20.11.0-alpine as development
 ENV PROJECT_DIR=/user/src/app
 WORKDIR $PROJECT_DIR
 COPY package*.json ./
-RUN npm config set registry 'https://registry.npmmirror.com/'&&npm install
+RUN npm config set registry 'https://registry.npmmirror.com'&&npm install
 COPY . .
 RUN npm run build
 
@@ -12,9 +12,10 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 WORKDIR $PROJECT_DIR
 COPY package*.json ./
-RUN npm config set registry 'https://registry.npmmirror.com/'&&npm install --only=production
+RUN npm config set registry 'https://registry.npmmirror.com'&&npm install --omit=dev
 COPY . .
-COPY --from=development  $PROJECT_DIR ./dist
-CMD [ "node",'dist/main' ]
+RUN rm -rf src/
+COPY --from=development  $PROJECT_DIR/dist ./dist
+CMD npm run start:prod
 EXPOSE 9003
 EXPOSE 9004
