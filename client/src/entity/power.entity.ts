@@ -1,6 +1,6 @@
 import { Status } from "@/config";
 import { Input, Select, TableColumnsType } from "antd";
-import { OperateCode_All, OperateCode_View, OperateCode_edit, OperateType, TableColsParams } from "./page.entity";
+import { OperateCode_All, OperateCode_View, OperateCode_edit, TableColsParams } from "./page.entity";
 import { FieldInfo } from "./form.entity";
 import TextArea from "antd/es/input/TextArea";
 import { RenderEnumOps, RenderStatusOps, rednerEnumTable, renderStatusTable } from "@/util/render";

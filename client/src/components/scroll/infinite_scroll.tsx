@@ -47,8 +47,7 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
   }, [props.dataLength]);
 
   function isElementAtTop(target: HTMLElement, scrollThreshold: string | number = 0.2) {
-    const clientHeight =
-      target === document.body || target === document.documentElement ? window.screen.availHeight : target.clientHeight;
+    // const clientHeight = target === document.body || target === document.documentElement ? window.screen.availHeight : target.clientHeight;
     const threshold = parseThreshold(scrollThreshold);
     // console.log(
     //   `top:${target.scrollTop} clienth:${clientHeight} threshold:${threshold.value} unit:${threshold.unit} scrollheight:${target.scrollHeight}`

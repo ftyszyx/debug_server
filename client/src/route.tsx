@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import BasicLayout from "@/layouts/BasicLayout";
 import Loading from "@/components/loading";
 import { BrowerRouter, Route } from "kl_router";
