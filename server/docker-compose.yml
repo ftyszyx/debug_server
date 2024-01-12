@@ -25,14 +25,14 @@ services:
       - 9005:3306
     restart: on-failure
     environment:
-      - MYSQL_DATABASE= debug_server
-      - MYSQL_ROOT_PASSWORD= 123456
-      - MYSQL_USER= debug_server
-      - MYSQL_PASSWORD= 123456
-      - MYSQL_ROOT_HOST= '%'
+      MYSQL_DATABASE: debug_server
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_USER: "debug_server"
+      MYSQL_PASSWORD: "123456"
+      MYSQL_ROOT_HOST: '%'
     volumes:
-      - ./deploy/mysql/db:/var/lib/mysql # 用来存放了数据库表文件
-      - ./deploy/mysql/conf/my.cnf:/etc/my.cnf # 存放自定义的配置文件
+      # - ./deploy/mysql/db:/var/lib/mysql # 用来存放了数据库表文件
+      - ./deploy/mysql/conf:/etc/mysql/conf.d # 存放自定义的配置文件
       # 我们在启动MySQL容器时自动创建我们需要的数据库和表
       # mysql官方镜像中提供了容器启动时自动docker-entrypoint-initdb.d下的脚本的功能
       - ./deploy/mysql/init:/docker-entrypoint-initdb.d/ # 存放初始化的脚本

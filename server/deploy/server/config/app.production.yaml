@@ -15,6 +15,7 @@ debug_server:
 db:
   host: mysql_debug_server
   port: 3306
+  # user: debug_server 
   user: root
   password: '123456'
   database: debug_server

@@ -16,6 +16,6 @@ RUN npm config set registry 'https://registry.npmmirror.com'&&npm install --omit
 COPY . .
 RUN rm -rf src/
 COPY --from=development  $PROJECT_DIR/dist ./dist
-# CMD [ "node",'dist/main' ]
+CMD npm run start:prod
 EXPOSE 9003
 EXPOSE 9004
