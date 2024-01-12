@@ -4,7 +4,6 @@ import axios, { AxiosRequestConfig } from "axios";
 import { GetToken } from "./tools.js";
 import { PagePath } from "@/entity/api_path.js";
 // import Mock from "better-mock";
-// //@ifdef dev
 // import mock from "../../mock/app_api";
 // if (import.meta.env.DEV) {
 //   Mock.mock(/\/api.*/, (options: any) => {
@@ -12,7 +11,6 @@ import { PagePath } from "@/entity/api_path.js";
 //     return res;
 //   });
 // }
-// //@endif
 console.log("apiurl", API_URL);
 export const MyFetch = axios.create({
   baseURL: API_URL,

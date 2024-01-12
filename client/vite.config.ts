@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path, { resolve } from "path";
-import conditionalCompile from "./vite_ifdef";
 import tailwindcss from "tailwindcss";
 import autoprefier from "autoprefixer";
 function pathResolve(dir) {
@@ -26,7 +25,7 @@ export default defineConfig({
     },
   },
   base: "./",
-  plugins: [react(), conditionalCompile()],
+  plugins: [react()],
   css: {
     preprocessorOptions: {
       less: {
