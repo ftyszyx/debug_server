@@ -1,9 +1,21 @@
 version: '3.9'
 services:
+  debug_client:
+    container_name: debug_client 
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 9001:9001
+    networks:
+      - debugserver_net
+    volumes: 
+     - ./client/deploy/nginx/nginx.conf:/etc/nginx/nginx.conf
   debug_server:
     container_name: debug_server
     build:
-      context: .
+      context: ./server
       dockerfile: Dockerfile
     restart: on-failure
     ports:
@@ -16,8 +28,8 @@ services:
       - redis_debug_server
       - mysql_debug_server
     volumes: 
-     - ./deploy/server/logs:/user/src/app/logs
-     - ./deploy/server/config:/user/src/app/config
+     - ./server/deploy/server/logs:/user/src/app/logs
+     - ./server/deploy/server/config:/user/src/app/config
   mysql_debug_server:
     container_name: mysql_debug_server
     image: mysql:5.7

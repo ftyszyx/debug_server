@@ -9,4 +9,5 @@ fi
 echo "docker build"
 docker build -t debug_client .
 echo "run docker"
-docker run -d -p 9001:80 debug_client -v ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+# docker run --name debug_client  -p 9001:80 -v ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro --restart always -d debug_client  
+docker run --name debug_client  -p 9001:80 -v ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro  -d debug_client  

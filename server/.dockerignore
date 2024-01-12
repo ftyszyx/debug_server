@@ -8,3 +8,4 @@ Dockerfile
 deploy/
 docker-compose.yml
 config/
+*.sh
