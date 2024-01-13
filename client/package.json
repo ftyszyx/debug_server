@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5000",
+    "dev": "vite --port 3000",
     "build": "tsc --project tsconfig.build.json && vite build",
     "lint": "eslint src --fix --ext .ts --ext .tsx",
     "preview": "vite preview"
@@ -13,7 +13,7 @@
     "@ant-design/icons": "^5.2.6",
     "antd": "^5.9.4",
     "axios": "^1.4.0",
-    "kl_router": "^1.0.20",
+    "kl_router": "^1.0.21",
     "kl_state": "^1.0.3",
     "lodash": "^4.17.21",
     "path-to-regexp": "^6.2.1",
