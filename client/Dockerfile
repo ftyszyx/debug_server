@@ -9,6 +9,7 @@ COPY . .
 RUN npm run build
 
 FROM nginx:1.25.3-alpine as server
-ENV PROJECT_DIR=/user/share/nginx/html/
+ENV PROJECT_DIR=/usr/share/nginx/html/
 WORKDIR $PROJECT_DIR
 COPY --from=development  /user/src/app/dist ./ 
+EXPOSE 80
