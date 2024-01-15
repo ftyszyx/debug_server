@@ -23,5 +23,5 @@ redis:
   password: 123456
 
 debug_server:
-  host: localhost
-  port: 8888
+  host: 127.0.0.1
+  port: 8889
