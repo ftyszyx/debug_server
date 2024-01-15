@@ -163,6 +163,6 @@ export class DebugServerService {
       const address = this.server.address() as net.AddressInfo;
       this.logger.log(`debugsever listen:${address.address}:${address.port}`, LogTag);
     });
-    this.server.listen(this.config.port, this.config.host);
+    this.server.listen(this.config.port);
   }
 }

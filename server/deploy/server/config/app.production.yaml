@@ -9,7 +9,7 @@ http:
   token_expire_in: 144000000
 
 debug_server:
-  host: localhost
+  host: 'localhost'
   port: 9004
 
 db:
