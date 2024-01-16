@@ -1,4 +1,4 @@
-import { DataSource, EntityTarget, FindOptionsWhere, Repository, SelectQueryBuilder } from 'typeorm';
+import { DataSource, EntityTarget, FindOptionsWhere, Repository } from 'typeorm';
 import { ListReq, ListResp } from 'src/entity/api.entity';
 import { filterQuery } from 'src/utils/sql.util';
 import { HttpException, Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';

@@ -6,8 +6,8 @@ import { BaseCrudService } from 'src/utils/base_crud.sevice';
 import { Repository } from 'typeorm';
 import { DebugClientEntity } from './debug_client.entity';
 import { RedisService } from 'src/db/redis/redis.service';
-import { getDebugClientKey, getTableFieldCacheKey } from 'src/utils/redis';
-import { EventNameType, Net_Retcode, SocketIoMessageType } from 'src/entity/constant';
+import { getTableFieldCacheKey } from 'src/utils/redis';
+import { EventNameType, Net_Retcode } from 'src/entity/constant';
 import { ClientSocketItem, DebugServerService } from 'src/debug_server/debug_server.service';
 import { ChatServerGateWay } from 'src/chat_server/chat_server.gateway';
 

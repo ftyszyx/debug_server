@@ -7,6 +7,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { AppHttpConfig } from './entity/config';
 import { Request } from 'express';
+// const allowlist = ['http://localhost:7000'];
 const allowlist = [];
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,6 +15,7 @@ async function bootstrap() {
   });
   app.enableCors((req: Request, callback) => {
     let corsOptions;
+    // console.log("req.header('Origin') 1", req.header('Origin')); //如果你不需要 Cookie 可以设置为 *
     if (allowlist.length == 0 || allowlist.indexOf(req.header('Origin')) !== -1) {
       // console.log("req.header('Origin')", req.header('Origin')); //如果你不需要 Cookie 可以设置为 *
       // credentials 与前端的axios 的withCredentials（XMLHttpRequest.withCredentials）

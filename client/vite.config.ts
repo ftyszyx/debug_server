@@ -12,17 +12,17 @@ function pathResolve(dir) {
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:3000",
-        changeOrigin: true,
-        rewrite: (path) => {
-          // console.log("get path", path);
-          return path;
-          // return path.replace(/^\/api/, "");
-        },
-      },
-    },
+    // proxy: {
+    //   "/api": {
+    //     target: "http://127.0.0.1:3000",
+    //     changeOrigin: true,
+    //     rewrite: (path) => {
+    //       // console.log("get path", path);
+    //       return path;
+    //       // return path.replace(/^\/api/, "");
+    //     },
+    //   },
+    // },
   },
   base: "/",
   plugins: [react()],
