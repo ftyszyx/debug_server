@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50710
 File Encoding         : 65001
 
-Date: 2024-01-02 18:39:14
+Date: 2024-01-16 10:36:03
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -28,12 +28,11 @@ CREATE TABLE `chat_log` (
   PRIMARY KEY (`id`),
   KEY `from_user` (`from_user`),
   KEY `room_id` (`room_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of chat_log
 -- ----------------------------
-INSERT INTO `chat_log` VALUES ('32', '\0\0\0\0\0\0\0\0\0\0\0', '2024-01-02 16:28:34', 'fc98f7deeb5763e8d7023dace124649cc0ca20fe', '0');
 
 -- ----------------------------
 -- Table structure for chat_room
@@ -44,6 +43,7 @@ CREATE TABLE `chat_room` (
   `users` text NOT NULL,
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `name` varchar(255) NOT NULL,
+  `nick` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
@@ -51,7 +51,7 @@ CREATE TABLE `chat_room` (
 -- ----------------------------
 -- Records of chat_room
 -- ----------------------------
-INSERT INTO `chat_room` VALUES ('1', '1,fc98f7deeb5763e8d7023dace124649cc0ca20fe', '2024-01-02 17:13:41', '1-fc98f7deeb5763e8d7023dace124649cc0ca20fe');
+INSERT INTO `chat_room` VALUES ('1', '1,fc98f7deeb5763e8d7023dace124649cc0ca20fe', '2024-01-02 17:13:41', '1-fc98f7deeb5763e8d7023dace124649cc0ca20fe', '张雨鑫编辑器');
 
 -- ----------------------------
 -- Table structure for debug_client
