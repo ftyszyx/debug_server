@@ -37,7 +37,11 @@ import { ChatLogEntity } from './chat_server/chat_Log.entity';
 import { ChatSocketExcepionFilter } from './core/filter/exception/socket.filter';
 import { ChatRoomModule } from './chat_room/chat_room.module';
 import { ChatRoomEntity } from './chat_room/chat_room.entity';
-
+const timezoned = () => {
+  return new Date().toLocaleString('zh', {
+    timeZone: 'Asia/Shanghai',
+  });
+};
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -62,7 +66,7 @@ import { ChatRoomEntity } from './chat_room/chat_room.entity';
       transports: [
         new winston.transports.Console({
           format: winston.format.combine(
-            winston.format.timestamp(),
+            winston.format.timestamp({ format: timezoned }),
             winston.format.ms(),
             nestWinstonModuleUtilities.format.nestLike('admin', { colors: true, prettyPrint: true }),
           ),
@@ -76,7 +80,7 @@ import { ChatRoomEntity } from './chat_room/chat_room.entity';
           maxFiles: '14d',
           format: winston.format.combine(
             winston.format.timestamp({
-              format: 'YYYY-MM-DD HH:mm:ss',
+              format: timezoned,
             }),
             winston.format.printf(
               (info) =>
@@ -113,7 +117,7 @@ import { ChatRoomEntity } from './chat_room/chat_room.entity';
           username: appconfig.user, // 用户名
           password: appconfig.password, // 密码
           database: appconfig.database, //数据库名
-          // timezone: '+08:00', //服务器上配置的时区
+          timezone: '+08:00', //服务器上配置的时区
           logging: true,
           logger: log, // 'advanced-console',
           // synchronize: true, //根据实体自动创建数据库表， 生产环境建议关闭
