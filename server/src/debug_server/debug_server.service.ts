@@ -128,7 +128,7 @@ export class DebugServerService {
         return;
       }
       // client.onMessage(ClientCmdType.SET, parmas);
-      return;
+      // return;
     }
     this.event.emit(EventNameType.DebugServerClientResp, client, to_userid, text);
   }
