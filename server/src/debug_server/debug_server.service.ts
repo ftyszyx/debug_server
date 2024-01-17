@@ -1,4 +1,4 @@
-import { ConsoleLogger, Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { Server as NetSocket, Socket } from 'net';
 import * as net from 'net';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -128,7 +128,7 @@ export class DebugServerService {
         return;
       }
       // client.onMessage(ClientCmdType.SET, parmas);
-      // return;
+      return;
     }
     this.event.emit(EventNameType.DebugServerClientResp, client, to_userid, text);
   }

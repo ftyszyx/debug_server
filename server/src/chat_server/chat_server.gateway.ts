@@ -24,7 +24,6 @@ import { Repository } from 'typeorm';
 import { BaseCrudService } from 'src/utils/base_crud.sevice';
 import { JoinRoomReq } from 'src/entity/api.entity';
 import { ChatRoomService } from 'src/chat_room/chat_room.service';
-import { cli } from 'winston/lib/winston/config';
 export const HEART_BEAT_INTERVAL = 3000;
 const LogTagName = 'chatServer';
 
